@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Home</title>
+    <%- include("./fragments/head.ejs") %>
+        <style>
+            #clicker_button {
+                padding: 15px 25px;
+                font-size: 24px;
+                text-align: center;
+                cursor: pointer;
+                outline: none;
+                color: #fff;
+                background-color: #04AA6D;
+                border: none;
+                border-radius: 15px;
+                box-shadow: 0 9px #999;
+            }
+
+            #clicker_button:hover {
+                background-color: #3e8e41
+            }
+
+            #clicker_button:active {
+                background-color: #3e8e41;
+                box-shadow: 0 5px #666;
+                transform: translateY(4px);
+            }
+        </style>
+
+        <script>
+            async function increaseCounter() {
+                fetch("/api/credits").then(async (data) => {
+                    const json = await data.json()
+                    if (json.status == true) {
+                        document.getElementById("credits_score").innerHTML = `You currently have ${json.data.credits} credits.`
+                    } else {
+                        alert(json.message)
+                    }
+                })
+            }
+        </script>
+</head>
+
+<body>
+    <%- include("./fragments/header.ejs") %>
+        <h2>Play</h2>
+        <p id="credits_score"> You currently have <%- locals.user.userCredits%> credits.</p>
+        <button id="clicker_button" onclick="increaseCounter()">
+
+        </button>
+
+</body>
+
+</html>

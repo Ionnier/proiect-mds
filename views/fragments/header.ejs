@@ -1,0 +1,35 @@
+<header>
+    <div id="logo_image_background">
+        <img src="/resources/images/logo.png" alt="Logo Image">
+    </div>
+    <ul>
+        <a href="/">
+            <li>Home</li>
+        </a>
+        <% if(locals.user){ %>
+            <a href="/play">
+                <li> Play</li>
+            </a>
+            <a href="/rooms">
+                <li>Rooms</li>
+            </a>
+            <%} else{ %>
+                <a href="/login">
+                    <li>Login</li>
+                </a>
+                <a href="/signup">
+                    <li>Signup</li>
+                </a>
+                <%} %>
+                    <a href="about">
+                        <li>About</li>
+                    </a>
+                    <a href="contact">
+                        <li>Contact</li>
+                    </a>
+                    <% if(locals.user){ %>
+                        <a href="/logout">
+                            <li> Log Out</li>
+                        </a>
+                        <% } %>
+</header>
