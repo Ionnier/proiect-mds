@@ -40,6 +40,26 @@
                     }
                 })
             }
+            async function onChangeInput(args) {
+                if (parseInt(args.oldvalue) > parseInt(args.value)) {
+                    args.value = args.oldvalue
+                } else {
+                    let id
+                    for (let x of args.classList) {
+                        if (x.startsWith('id_service')) {
+                            id = parseInt(x.replace('id_service', ''))
+                        }
+                    }
+                    const data = await fetch(`/api/services/increase/${id}`)
+                    const json = await data.json()
+                    if (json.success == true) {
+                        console.log('Done')
+                        return true
+                    } else {
+                        // TODO:
+                    }
+                }
+            }
         </script>
 </head>
 
@@ -48,8 +68,53 @@
         <h2>Play</h2>
         <p id="credits_score"> You currently have <%- locals.user.userCredits%> credits.</p>
         <button id="clicker_button" onclick="increaseCounter()">
-
         </button>
+
+        <% if(locals.services){ %>
+            <div id="services_div">
+                <% for(let service of locals.services){ %>
+                    <div class="service">
+                        <p class="serviceName">Name:
+                            <%- service.serviceName %>
+                        </p>
+                        <p class="serviceDescription">Description:
+                            <%- service.serviceDescription %>
+                        </p>
+                        <% let price %>
+                            <% let value %>
+                                <% let level %>
+                                    <% if(service.boughtservices.length>0){ %>
+                                        <% //price=service.serviceBasePrice %>
+                                            <% value=service.boughtservices[0].serviceLevel %>
+                                                <% level=service.boughtservices[0].serviceLevel %>
+
+                                                    <% } else{ %>
+                                                        <% price=service.serviceBasePrice %>
+                                                            <% value=service.serviceBaseValue %>
+                                                                <% level=0 %>
+                                                                    <%} %>
+                                                                        <p class="servicePrice">
+                                                                            Price: <%- price %>
+                                                                        </p>
+                                                                        <p class="serviceValue">
+                                                                            Value per Cycle: <%- value %>
+                                                                        </p>
+                                                                        <p>Level:</p>
+                                                                        <input type="number"
+                                                                            class="level id_service<%-service.idService %>"
+                                                                            min="0" max="<%- service.serviceMaxLevel %>"
+                                                                            onfocus="this.oldvalue = this.value;"
+                                                                            step="1" value="<%- level %>"
+                                                                            onKeyDown="return false"
+                                                                            onchange="onChangeInput(this);this.oldvalue = this.value;">
+
+
+                    </div>
+                    <% }%>
+
+            </div>
+
+            <% }%>
 
 </body>
 
