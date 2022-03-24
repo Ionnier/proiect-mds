@@ -19,3 +19,24 @@ exports.increaseCredits = async (req, res, next) => {
         }
     }
 }
+
+exports.updateCredits = async (req, res, next) => {
+    if (req.session.user) {
+        try {
+            const credits = await models.users.findOne({
+                where: {
+                    idUser: req.session.user.idUser
+                },
+                returning: true
+            })
+            if (credits) {
+                req.session.user.userCredits = credits.userCredits
+                res.locals.user.userCredits = credits.userCredits
+                return next()
+            }
+        }
+        catch (error) {
+            return res.json({ status: false, data: { error, message: "There was an error" } })
+        }
+    }
+}
