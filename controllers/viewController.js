@@ -1,5 +1,6 @@
 const express = require('express');
 const authController = require('../controllers/authController');
+const servicesController = require('../controllers/servicesController');
 const renderError = require('../utils/renderError')
 const formidable = require('formidable')
 
@@ -53,7 +54,14 @@ exports.postSignUpPage = async (req, res) => {
 }
 
 exports.getPlayPage = async (req, res) => {
-    res.render("play")
+    const services = await servicesController.getServices(req.session.user.idUser)
+
+    for (let x of services) {
+        if (x.dataValues.boughtservices.length > 0) {
+            console.log(x, x.dataValues.boughtservices[0].dataValues.serviceLevel)
+        }
+    }
+    res.render("play", { services })
 }
 
 exports.getGeneralPage = (req, res, next) => {

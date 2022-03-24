@@ -3,6 +3,7 @@ const morgan = require('morgan');
 const session = require('express-session');
 const viewRouter = require('./routers/viewRouter');
 const creditsRouter = require('./routers/creditsRouter');
+const servicesRouter = require('./routers/servicesRouter');
 
 const app = express();
 
@@ -19,6 +20,7 @@ app.use("/*", (req, res, next) => {
         res.end('Website is in maintenance mode.')
         return
     } else {
+        console.log(req.session.user)
         res.locals.user = req.session.user
         next()
     }
@@ -31,6 +33,7 @@ if (process.env.NODE_ENV === 'dev') {
 app.use("/resources", express.static(__dirname + "/resources"))
 
 app.use('/api/credits', creditsRouter)
+app.use('/api/services', servicesRouter)
 app.use('/', viewRouter);
 
 app.use('*', (err, req, res, next) => {
