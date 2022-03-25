@@ -14,6 +14,21 @@ exports.getServices = async (idUser) => {
     return data
 }
 
+exports.getService = async (req, res, next) => {
+    const data = await models.services.findAll({
+        include: [{
+            model: models.boughtservices,
+            as: 'boughtservices',
+            required: false,
+            where: sequelize.where(sequelize.col('id_user'), '=', req.session.user.idUser)
+        }],
+        where: {
+            idService: req.params.idService
+        }
+    })
+    res.status(200).json({ status: true, data: { data } })
+}
+
 exports.upgradeService = async (req, res, next) => {
     console.log('asd')
     const serviceData = await models.services.findOne({

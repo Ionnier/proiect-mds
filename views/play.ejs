@@ -40,6 +40,38 @@
                     }
                 })
             }
+            async function updateService(idService) {
+                const div = document.getElementsByClassName(`service${idService}`)[0]
+                if (!div)
+                    return
+                const service = await fetch(`/api/services/${parseInt(idService)}`)
+                const serviceData = await service.json()
+                if (!serviceData)
+                    return
+                if (serviceData.status) {
+                    const obj = serviceData.data.data[0]
+                    div.getElementsByClassName('serviceName')[0].innerHTML = `Name: ${obj.serviceName}`
+                    div.getElementsByClassName('serviceDescription')[0].innerHTML = `Description: ${obj.serviceDescription}`
+                    let price
+                    let value
+                    let level
+                    //console.log(obj)
+                    console.log(obj.boughtservices[0])
+                    if (obj.boughtservices && obj.boughtservices.length > 0) {
+                        level = obj.boughtservices[0].serviceLevel
+                        price = obj.serviceBasePrice * Math.pow(obj.servicePriceModifier, level)
+                        value = obj.serviceBaseValue * Math.pow(obj.serviceValueModifier, level)
+                    } else {
+                        price = obj.serviceBasePrice
+                        value = obj.serviceBaseValue
+                        level = 0
+                    }
+                    div.getElementsByClassName('servicePrice')[0].innerHTML = `Price: ${price}`
+                    div.getElementsByClassName('serviceValue')[0].innerHTML = `Value per Cycle: ${value}`
+                    div.getElementsByClassName('level')[0].value = parseInt(level)
+                }
+            }
+
             async function onChangeInput(args) {
                 if (parseInt(args.oldvalue) > parseInt(args.value)) {
                     args.value = args.oldvalue
@@ -52,11 +84,9 @@
                     }
                     const data = await fetch(`/api/services/increase/${id}`)
                     const json = await data.json()
+                    await updateService(id)
                     if (json.success == true) {
-                        console.log('Done')
                         return true
-                    } else {
-                        // TODO:
                     }
                 }
             }
@@ -73,7 +103,7 @@
         <% if(locals.services){ %>
             <div id="services_div">
                 <% for(let service of locals.services){ %>
-                    <div class="service">
+                    <div class="service service<%-service.idService %> ">
                         <p class="serviceName">Name:
                             <%- service.serviceName %>
                         </p>
@@ -84,10 +114,11 @@
                             <% let value %>
                                 <% let level %>
                                     <% if(service.boughtservices.length>0){ %>
-                                        <% //price=service.serviceBasePrice %>
-                                            <% value=service.boughtservices[0].serviceLevel %>
-                                                <% level=service.boughtservices[0].serviceLevel %>
-
+                                        <% level=service.boughtservices[0].serviceLevel %>
+                                            <% price=service.serviceBasePrice * Math.pow(service.servicePriceModifier,
+                                                level) %>
+                                                <% value=service.serviceBaseValue *
+                                                    Math.pow(service.serviceValueModifier, level) %>
                                                     <% } else{ %>
                                                         <% price=service.serviceBasePrice %>
                                                             <% value=service.serviceBaseValue %>
