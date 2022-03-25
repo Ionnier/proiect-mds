@@ -30,8 +30,26 @@
         </style>
 
         <script>
+            async function getCurrentCredits() {
+                try {
+                    const response = await fetch("/api/credits");
+                    const data = await response.json();
+                    return data.data.credits
+                } catch (e) {
+                    console.log(e)
+                }
+            }
+            async function updateViewCredits() {
+                const currentCredits = await getCurrentCredits()
+                if (currentCredits) {
+                    document.getElementById('credits_score').innerHTML = `You currently have ${currentCredits} credits.`
+                }
+            }
+            setInterval(async () => {
+                await updateViewCredits()
+            }, 1000)
             async function increaseCounter() {
-                fetch("/api/credits").then(async (data) => {
+                fetch("/api/credits/increase").then(async (data) => {
                     const json = await data.json()
                     if (json.status == true) {
                         document.getElementById("credits_score").innerHTML = `You currently have ${json.data.credits} credits.`
@@ -85,6 +103,7 @@
                     const data = await fetch(`/api/services/increase/${id}`)
                     const json = await data.json()
                     await updateService(id)
+                    await updateViewCredits()
                     if (json.success == true) {
                         return true
                     }

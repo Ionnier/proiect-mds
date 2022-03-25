@@ -40,3 +40,27 @@ exports.updateCredits = async (req, res, next) => {
         }
     }
 }
+
+exports.getCredits = async (req, res, next) => {
+    if (req.session.user) {
+        try {
+            const credits = await models.users.findOne({
+                where: {
+                    idUser: req.session.user.idUser
+                },
+                returning: true
+            })
+            if (credits) {
+                return res.status(200).json({
+                    status: true,
+                    data: {
+                        credits: credits.userCredits
+                    }
+                })
+            }
+        }
+        catch (error) {
+            return res.json({ status: false, data: { error, message: "There was an error" } })
+        }
+    }
+}
