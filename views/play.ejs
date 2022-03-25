@@ -30,6 +30,7 @@
         </style>
 
         <script>
+            const map = new Map()
             async function getCurrentCredits() {
                 try {
                     const response = await fetch("/api/credits");
@@ -45,10 +46,8 @@
                     document.getElementById('credits_score').innerHTML = `You currently have ${currentCredits} credits.`
                 }
             }
-            setInterval(async () => {
-                await updateViewCredits()
-            }, 1000)
             async function increaseCounter() {
+                map.set('credits_score', false)
                 fetch("/api/credits/increase").then(async (data) => {
                     const json = await data.json()
                     if (json.status == true) {
@@ -58,7 +57,7 @@
                     }
                 })
             }
-            async function updateService(idService) {
+            async function updateService(idService, automatic) {
                 const div = document.getElementsByClassName(`service${idService}`)[0]
                 if (!div)
                     return
@@ -73,8 +72,6 @@
                     let price
                     let value
                     let level
-                    //console.log(obj)
-                    console.log(obj.boughtservices[0])
                     if (obj.boughtservices && obj.boughtservices.length > 0) {
                         level = obj.boughtservices[0].serviceLevel
                         price = obj.serviceBasePrice * Math.pow(obj.servicePriceModifier, level)
@@ -87,6 +84,9 @@
                     div.getElementsByClassName('servicePrice')[0].innerHTML = `Price: ${price}`
                     div.getElementsByClassName('serviceValue')[0].innerHTML = `Value per Cycle: ${value}`
                     div.getElementsByClassName('level')[0].value = parseInt(level)
+                }
+                if (automatic) {
+                    map.set(`service${idService}`, false)
                 }
             }
 
@@ -109,6 +109,29 @@
                     }
                 }
             }
+            window.addEventListener('load', async () => {
+                map.set('credits_score', true)
+                for (let x of document.getElementsByClassName('service'))
+                    for (let y of x.classList) {
+                        if (y.includes('service') && y != 'service' && parseInt(y.replace('service', '')) != undefined) {
+                            map.set(y, true)
+                            break
+                        }
+                    }
+                setInterval(async () => {
+                    for (let [key, value] of map.entries()) {
+                        if (value == true) {
+                            if (key.includes('service')) {
+                                updateService(parseInt(key.replace('service', '')), true)
+                            } else {
+                                updateViewCredits(true)
+                            }
+                        } else {
+                            map.set(key, true)
+                        }
+                    }
+                }, 60_000)
+            }, false);
         </script>
 </head>
 
@@ -157,8 +180,6 @@
                                                                             step="1" value="<%- level %>"
                                                                             onKeyDown="return false"
                                                                             onchange="onChangeInput(this);this.oldvalue = this.value;">
-
-
                     </div>
                     <% }%>
 
