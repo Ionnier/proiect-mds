@@ -20,7 +20,7 @@ app.use("/*", (req, res, next) => {
         res.end('Website is in maintenance mode.')
         return
     } else {
-        console.log(req.session.user)
+        //console.log(req.session.user)
         res.locals.user = req.session.user
         next()
     }
