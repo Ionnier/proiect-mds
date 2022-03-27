@@ -105,3 +105,41 @@ exports.upgradeService = async (req, res, next) => {
         }
     }
 }
+function calculateCredits(service) {
+    return service.service_base_value * Math.pow(service.service_value_modifier, service.service_level)
+}
+
+exports.updateServices = async (req, res, next) => {
+    const data = await sequelize.query(`SELECT * from UpdateServies;`, {
+        where: {
+            idUser: req.session.user.idUser
+        }
+    })
+    const transaction = await sequelize.transaction();
+    try {
+        for (let elem of data[0]) {
+            await models.boughtservices.update({
+                serviceLastCheck: sequelize.literal('CURRENT_TIMESTAMP')
+            }, {
+                where: {
+                    idService: elem.id_service,
+                    idUser: elem.id_user
+                },
+                transaction
+            })
+            await models.users.increment({ userCredits: calculateCredits(elem) }, {
+                where: {
+                    idUser: elem.id_user
+                },
+                transaction
+            })
+        }
+        await transaction.commit()
+        next()
+    }
+    catch (e) {
+        console.log(e)
+        await transaction.rollback()
+        next()
+    }
+}
