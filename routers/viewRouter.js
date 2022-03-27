@@ -2,6 +2,7 @@ const express = require('express');
 const viewController = require('../controllers/viewController')
 const authController = require('../controllers/authController');
 const creditsController = require('../controllers/creditsController');
+const servicesController = require('../controllers/servicesController');
 
 const router = express.Router();
 
@@ -14,7 +15,7 @@ router.get('/signup', viewController.getSignUpPage)
 router.post('/signup', viewController.postSignUpPage)
 
 router.get('/logout', authController.protect, viewController.getLogOutPage)
-router.get("/play", authController.protect, creditsController.updateCredits, viewController.getPlayPage)
+router.get("/play", authController.protect, servicesController.updateServices, creditsController.updateCredits, viewController.getPlayPage)
 
 
 router.get("/*", viewController.getGeneralPage)

@@ -55,12 +55,6 @@ exports.postSignUpPage = async (req, res) => {
 
 exports.getPlayPage = async (req, res) => {
     const services = await servicesController.getServices(req.session.user.idUser)
-
-    for (let x of services) {
-        if (x.dataValues.boughtservices.length > 0) {
-            console.log(x, x.dataValues.boughtservices[0].dataValues.serviceLevel)
-        }
-    }
     res.render("play", { services })
 }
 

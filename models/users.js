@@ -41,7 +41,7 @@ class users extends Sequelize.Model {
       field: 'user_password'
     },
     userCredits: {
-      type: DataTypes.BIGINT,
+      type: DataTypes.REAL,
       allowNull: false,
       defaultValue: 0,
       field: 'user_credits'
