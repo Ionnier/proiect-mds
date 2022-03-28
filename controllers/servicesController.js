@@ -127,7 +127,7 @@ exports.updateServices = async (req, res, next) => {
                 },
                 transaction
             })
-            await models.users.increment({ userCredits: calculateCredits(elem) }, {
+            await models.users.increment({ userCredits: parseInt(elem.times) * calculateCredits(elem) }, {
                 where: {
                     idUser: elem.id_user
                 },
