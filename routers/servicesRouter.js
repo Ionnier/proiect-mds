@@ -4,7 +4,7 @@ const authController = require('../controllers/authController');
 
 const router = express.Router();
 
-router.get('/increase/:idService/', authController.protect, servicesController.upgradeService)
+router.get('/increase/:idService/', authController.protect, servicesController.updateServices, servicesController.upgradeService)
 router.get('/:idService/', authController.protect, servicesController.getService)
 
 module.exports = router;
