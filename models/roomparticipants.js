@@ -8,7 +8,8 @@ class roomparticipants extends Sequelize.Model {
   return super.init({
     idRoom: {
       type: DataTypes.INTEGER,
-      allowNull: true,
+      allowNull: false,
+      primaryKey: true,
       references: {
         model: 'rooms',
         key: 'id_room'
@@ -17,7 +18,8 @@ class roomparticipants extends Sequelize.Model {
     },
     idUser: {
       type: DataTypes.INTEGER,
-      allowNull: true,
+      allowNull: false,
+      primaryKey: true,
       references: {
         model: 'users',
         key: 'id_user'
@@ -34,7 +36,17 @@ class roomparticipants extends Sequelize.Model {
     sequelize,
     tableName: 'roomparticipants',
     schema: 'public',
-    timestamps: false
+    timestamps: false,
+    indexes: [
+      {
+        name: "pk_roomparticipant",
+        unique: true,
+        fields: [
+          { name: "id_room" },
+          { name: "id_user" },
+        ]
+      },
+    ]
   });
   }
 }

@@ -24,6 +24,11 @@ class rooms extends Sequelize.Model {
       allowNull: false,
       defaultValue: Sequelize.Sequelize.literal('CURRENT_TIMESTAMP'),
       field: 'room_creation_time'
+    },
+    roomImage: {
+      type: DataTypes.STRING(100),
+      allowNull: true,
+      field: 'room_image'
     }
   }, {
     sequelize,
