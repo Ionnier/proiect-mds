@@ -12,7 +12,9 @@ function initModels(sequelize) {
   const services = _services(sequelize, DataTypes);
   const users = _users(sequelize, DataTypes);
 
+  rooms.belongsToMany(users, { as: 'idUserUsersRoomparticipants', through: roomparticipants, foreignKey: "idRoom", otherKey: "idUser" });
   services.belongsToMany(users, { as: 'idUserUsers', through: boughtservices, foreignKey: "idService", otherKey: "idUser" });
+  users.belongsToMany(rooms, { as: 'idRoomRooms', through: roomparticipants, foreignKey: "idUser", otherKey: "idRoom" });
   users.belongsToMany(services, { as: 'idServiceServices', through: boughtservices, foreignKey: "idUser", otherKey: "idService" });
   roomparticipants.belongsTo(rooms, { as: "idRoomRoom", foreignKey: "idRoom"});
   rooms.hasMany(roomparticipants, { as: "roomparticipants", foreignKey: "idRoom"});

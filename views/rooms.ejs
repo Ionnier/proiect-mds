@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Rooms</title>
+    <%- include("./fragments/head.ejs") %>
+</head>
+
+<body>
+    <%- include("./fragments/header.ejs") %>
+        <main>
+            <h2>Rooms</h2>
+            <div class="rooms">
+                <% for(let room of rooms){ %>
+                    <div class="room">
+                        <h3>
+                            <%- room.roomName%>
+                        </h3>
+                        <img src="<%- room.roomImage %>" alt="Room Image">
+                        <a href="/room/<%- room.idRoom%>">Go to <%- room.roomName%></a>
+                    </div>
+                    <%} %>
+            </div>
+            <input type="button" value="Create a new Room" onclick="alert('TODO: Go to create a Room')">
+        </main>
+
+</body>
+
+</html>

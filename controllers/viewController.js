@@ -1,6 +1,7 @@
 const express = require('express');
 const authController = require('../controllers/authController');
 const servicesController = require('../controllers/servicesController');
+const roomsController = require('../controllers/roomsController');
 const renderError = require('../utils/renderError')
 const formidable = require('formidable')
 
@@ -70,4 +71,9 @@ exports.getGeneralPage = (req, res, next) => {
 exports.getLogOutPage = (req, res, next) => {
     authController.destroySession(req)
     return res.redirect('/')
+}
+
+exports.getRoomsPage = async (req, res) => {
+    const rooms = await roomsController.getRooms(req.session.user.idUser)
+    res.render("rooms", { rooms })
 }
