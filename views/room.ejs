@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Room - <%- room.roomName %>
+    </title>
+    <%- include("./fragments/head.ejs") %>
+        <script>
+            function showForm() {
+                document.getElementById('inviteForm').style.display = 'block'
+                document.getElementById('showInviteForm').style.display = 'none'
+            }
+            function hideForm() {
+                document.getElementById('inviteForm').style.display = 'none'
+                document.getElementById('showInviteForm').style.display = 'block'
+            }
+        </script>
+</head>
+
+<body>
+    <%- include("./fragments/header.ejs") %>
+        <main>
+            <h3>
+                <%- room.roomName %>
+            </h3>
+            <!-- TODO: Room Options (Roll Service) -->
+            <% if(room.idUserUsersRoomparticipants.length>1){ %>
+                <div class="participants">
+                    <p>Other members of <%- room.roomName%>: </p>
+                    <% for(let member of room.idUserUsersRoomparticipants){ %>
+                        <% if(member.idUser !=user.idUser){ %>
+                            <!-- TODO: Room Options (Promote / Kick Users) -->
+                            <div class="participant participant<%- member.idUser%>">
+                                <p>
+                                    <%- `${member.userFirstName} ${member.userLastName} -
+                                        ${member.roomparticipants.roomRole}`%>
+                                </p>
+                            </div>
+                            <%} %>
+                                <%} %>
+
+                </div>
+                <%} else{ %>
+                    <p>There are curently no other users in this room. You should invite someone!</p>
+                    <%} %>
+                        <input type="button" id="showInviteForm" value="Add other memebers" onclick="showForm()" />
+                        <div id="inviteForm" style="display: none;">
+                            <input type="text" id="memberContactInfo">
+                            <!-- TODO: Room Options (Handle events) -->
+                            <input type="button" value="Send" onclick="alert('TODO:')" />
+                            <input type="button" value="Cancel" onclick="hideForm()" />
+
+
+                        </div>
+        </main>
+
+</body>
+
+</html>

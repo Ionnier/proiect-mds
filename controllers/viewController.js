@@ -77,3 +77,9 @@ exports.getRoomsPage = async (req, res) => {
     const rooms = await roomsController.getRooms(req.session.user.idUser)
     res.render("rooms", { rooms })
 }
+
+exports.getRoomPage = async (req, res) => {
+    const room = await roomsController.getRoom(req.params.idRoom)
+    console.log(room)
+    res.render("room", { room })
+}

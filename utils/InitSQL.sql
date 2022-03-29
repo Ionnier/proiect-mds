@@ -1,4 +1,4 @@
-drop view updateservies;
+drop view updateservices;
 drop table BoughtServices;
 drop table Services;
 drop table Users;
@@ -44,7 +44,7 @@ create table BoughtServices(
 );
 
 create or replace
-view UpdateServies as 
+view UpdateServices as 
 select
 	b.id_service, b.service_level, s.service_base_value , s.service_value_modifier , b.id_user
 from

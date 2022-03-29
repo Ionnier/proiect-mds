@@ -18,6 +18,7 @@ router.get('/logout', authController.protect, viewController.getLogOutPage)
 router.get("/play", authController.protect, servicesController.updateServices, creditsController.updateCredits, viewController.getPlayPage)
 
 router.get("/rooms", authController.protect, viewController.getRoomsPage)
+router.get("/room/:idRoom/", authController.protect, viewController.getRoomPage)
 
 router.get("/*", viewController.getGeneralPage)
 
