@@ -27,14 +27,41 @@
             <% if(room.idUserUsersRoomparticipants.length>1){ %>
                 <div class="participants">
                     <p>Other members of <%- room.roomName%>: </p>
+                    <% const current_privilege = room.idUserUsersRoomparticipants.find(obj => {return obj.idUser == user.idUser}).roomparticipants %>
+                    <% console.log(current_privilege)%>
                     <% for(let member of room.idUserUsersRoomparticipants){ %>
                         <% if(member.idUser !=user.idUser){ %>
                             <!-- TODO: Room Options (Promote / Kick Users) -->
-                            <div class="participant participant<%- member.idUser%>">
+                            <div class="participant>" id="participant_div<%- member.idUser%>" tabindex="-1">
                                 <p>
                                     <%- `${member.userFirstName} ${member.userLastName} -
                                         ${member.roomparticipants.roomRole}`%>
                                 </p>
+                                <% if(getValueOfPrivilege(current_privilege.roomRole) != 0 && testPrivilege(current_privilege.roomRole, member.roomparticipants.roomRole)){%>
+                                    <style>
+                                        #<%-`user_menu${member.idUser}`%> {
+                                            display: none;
+                                        }
+                                        #<%-`participant_div${member.idUser}`%>:active #<%-`user_menu${member.idUser}`%>,
+                                        #<%-`participant_div${member.idUser}`%>:focus #<%-`user_menu${member.idUser}`%> {
+                                            display: block;
+                                        }
+                                    </style>
+                                <nav id="user_menu<%- member.idUser%>">
+                                    <ul>
+                                        <li>
+                                            <button>Open Image in New Tab</button>
+                                        </li>
+                                        <li>
+                                            <button>Increase Rank</button>
+                                        </li>
+                                        <li>
+                                            <button>Kick User</button>
+                                        </li>
+                                    </ul>
+                                </nav>
+                                <%} %>
+                                
                             </div>
                             <%} %>
                                 <%} %>

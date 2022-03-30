@@ -30,7 +30,6 @@ exports.getService = async (req, res, next) => {
 }
 
 exports.upgradeService = async (req, res, next) => {
-    console.log('asd')
     const serviceData = await models.services.findOne({
         where: {
             idService: req.params.idService
