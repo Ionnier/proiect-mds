@@ -14,6 +14,53 @@
                 document.getElementById('inviteForm').style.display = 'none'
                 document.getElementById('showInviteForm').style.display = 'block'
             }
+            async function deleteUser(idRoom, idUser){
+                if (!idRoom || !idUser)
+                    return
+                const request = await fetch(`/api/rooms/${idRoom}/${idUser}`,  {method: 'DELETE'})
+                const data = await request.json()
+                if (data.success == false)
+                    return alert(data.message)
+                return location.reload()
+            }
+            async function transferOwnership(idRoom, idUser){
+                if (!idRoom || !idUser)
+                    return
+                const request = await fetch(`/api/rooms/${idRoom}/${idUser}`,  {method: 'POST'})
+                const data = await request.json()
+                if (data.success == false)
+                    return alert(data.message)
+                return location.reload()
+            }
+            async function increasePrivilege(idRoom, idUser){
+                if (!idRoom || !idUser)
+                    return
+                const request = await fetch(`/api/rooms/${idRoom}/${idUser}`,  {method: 'PATCH'})
+                const data = await request.json()
+                if (data.success == false)
+                    return alert(data.message)
+                return location.reload()
+            }
+            async function addUser(){
+                const idRoom = <%- room.idRoom %>
+                const userName = document.getElementById('memberContactInfo').value
+                if (!userName || userName.length==0)
+                    return
+                const body = { idRoom, userName}
+                const request = await fetch(`/api/rooms/`, {
+                    method: 'POST',
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Content-Length": JSON.stringify(body).length
+                    },
+                    body: JSON.stringify(body)
+                })
+                const data = await request.json()
+                if (data.success == false)
+                    alert(data.message)
+                else
+                    location.reload()
+            }
         </script>
 </head>
 
@@ -48,17 +95,18 @@
                                     </style>
                                 <nav id="user_menu<%- member.idUser%>">
                                     <ul>
-                                        <% if(getValueOfPrivilege(current_privilege.roomRole)==2 && getValueOfPrivilege(member.roomparticipants.roomRole)==0){%>
+                                        <% if(getValueOfPrivilege(current_privilege.roomRole)==ownerLevel && getValueOfPrivilege(member.roomparticipants.roomRole)==0){%>
                                         <li>
-                                            <button>Promote User</button>
+                                            <button onclick="if (confirm('Promote to Admin?')) increasePrivilege(<%-`${member.roomparticipants.idRoom}, ${member.idUser}`%>) ">Promote</button>
                                         </li>
-                                        <%} else if(getValueOfPrivilege(current_privilege.roomRole)==ownerLevel) {%>
+                                        <% console.log(getValueOfPrivilege(current_privilege.roomRole), ownerLevel) %>
+                                        <%}if(getValueOfPrivilege(current_privilege.roomRole)==ownerLevel) {%>
                                             <li>
-                                                <button>Transfer Ownership</button>
+                                                <button onclick="if (confirm('Transfer Ownership?')) transferOwnership(<%-`${member.roomparticipants.idRoom}, ${member.idUser}`%>)">Transfer Ownership</button>
                                             </li>
                                             <%} %>
                                         <li>
-                                            <button onclick="if (confirm('Remove User?')) ">Remove User</button>
+                                            <button onclick="if (confirm('Remove User?')) deleteUser(<%-`${member.roomparticipants.idRoom}, ${member.idUser}`%>) ">Remove User</button>
                                         </li>
                                         <li>
                                             <button onclick="alert('TODO')">View User</button>
@@ -77,10 +125,13 @@
                     <%} %>
                         <input type="button" id="showInviteForm" value="Add other memebers" onclick="showForm()" />
                         <div id="inviteForm" style="display: none;">
-                            <input type="text" id="memberContactInfo">
-                            <!-- TODO: Room Options (Handle events) -->
-                            <input type="button" value="Send" onclick="alert('TODO:')" />
-                            <input type="button" value="Cancel" onclick="hideForm()" />
+                            <form onsubmit="addUser(); return false;">
+                                <input type="text" id="memberContactInfo">
+                                <!-- TODO: Room Options (Handle events) -->
+                                <input type="submit" value="Send"/>
+                                <input type="button" value="Cancel" onclick="hideForm()" />
+                            </form>
+                            
 
 
                         </div>

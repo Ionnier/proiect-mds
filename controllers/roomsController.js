@@ -29,19 +29,23 @@ exports.getRoom = async (idRoom) => {
     }
 }
 
-exports.currentPrivilege = async (req, res) => {
+exports.currentPrivilege = async (req, res, next) => {
+    console.log(req.body)
     const privilege = await models.roomparticipants.findOne({
         where: {
             idUser: req.session.user.idUser,
-            idRoom: req.params.idRoom
+            idRoom: req.params.idRoom || req.body.idRoom
         }
     })
     res.locals.privilege = privilege
+    console.log(res.locals.privilege)
+    next()
 }
 
 // TODO: Finish remove/promote logic
 // TODO: Add memeber logic
 exports.removeUser = async (req, res) => {
+    console.log('hello')
     const otherUser = await models.roomparticipants.findOne({
         where: {
             idUser: req.params.idUser,
@@ -51,15 +55,18 @@ exports.removeUser = async (req, res) => {
     if (otherUser) {
         if (roomPrivilegeUtils.testPrivilege(res.locals.privilege.roomRole, otherUser.roomRole)) {
             await otherUser.destroy()
-            return res.status(204).json({ status: true })
+            console.log('hello2')
+            return res.status(200).json({ success: true })
         }
-        return res.status(500).json({ status: false, data: { message: 'There was an error.' } })
+        return res.status(500).json({ success: false, message: 'There was an error.'  })
     }
-    return res.status(404).json({ status: false, data: { message: 'User not found.' } })
+    return res.status(404).json({ success: false, message: 'User not found.'  })
 }
 
 exports.transferOwner = async (req, res, next) => {
     // TODO: Maybe drop this query and use one update instead?
+    if (res.locals.privilege.roomRole != 'Owner')
+        return next(new Error(`You aren't the current owner.`))
     const otherUser = await models.roomparticipants.findOne({
         where: {
             idUser: req.params.idUser,
@@ -79,7 +86,48 @@ exports.transferOwner = async (req, res, next) => {
     })
     otherUser.roomRole = 'Owner'
     await otherUser.save(transaction)
-    res.status(200).json({status: true})
+    await transaction.commit()
+    res.status(200).json({success: true})
+}
+
+exports.increasePrivilege = async (req, res, next) =>{
+    if (res.locals.privilege.roomRole == 'Participant')
+        return next(new Error(`You don't have enough privileges.`))
+    const result = await models.roomparticipants.update({
+        roomRole: 'Admin'
+    }, {
+        where: {
+            idUser: req.params.idUser,
+            idRoom: res.locals.privilege.idRoom
+        }
+    })
+    console.log(result)
+    res.status(200).json({success: true})
+}
+
+exports.addUser = async (req, res, next) => {
+    if (res.locals.privilege.roomRole == 'Participant')
+        return next(new Error(`You don't have enough privileges.`))
+    if (!req.body.userName || !req.body.idRoom || req.body.userName.length==0)
+        return next(new Error('Not enough data.'))
+    const otherUser = await models.users.findOne({
+        where: {
+            userName: req.body.userName
+        }, include: [{
+            model: models.roomparticipants, as: 'roomparticipants', required: false, where: {
+                idRoom: req.body.idRoom
+            }
+        }]
+    })
+    if (!otherUser)
+        return next(new Error('An user with such an username doesn\t exist.'))
+    if (otherUser.roomparticipants.length!=0)
+        return next(new Error(`${otherUser.firstName} ${otherUser.lastName} is already in this room.`))
+    await models.roomparticipants.create({
+        idRoom: req.body.idRoom,
+        idUser: otherUser.idUser
+    })
+    res.status(200).json({success: true, message: 'User added succesfully.'})
 }
 
 exports.addRoomUtils = async (req, res, next) => {

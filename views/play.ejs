@@ -50,7 +50,7 @@
                 map.set('credits_score', false)
                 fetch("/api/credits/increase").then(async (data) => {
                     const json = await data.json()
-                    if (json.status == true) {
+                    if (json.success == true) {
                         document.getElementById("credits_score").innerHTML = `You currently have ${json.data.credits} credits.`
                     } else {
                         alert(json.message)
@@ -65,7 +65,7 @@
                 const serviceData = await service.json()
                 if (!serviceData)
                     return
-                if (serviceData.status) {
+                if (serviceData.success) {
                     const obj = serviceData.data.data[0]
                     div.getElementsByClassName('serviceName')[0].innerHTML = `Name: ${obj.serviceName}`
                     div.getElementsByClassName('serviceDescription')[0].innerHTML = `Description: ${obj.serviceDescription}`

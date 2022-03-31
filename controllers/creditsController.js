@@ -12,10 +12,10 @@ exports.increaseCredits = async (req, res, next) => {
                 returning: true
             })
             if (credits)
-                return res.json({ status: true, data: { credits: credits[0][0][0].user_credits, message: "Credits added succesfully!" } })
+                return res.json({ success: true, data: { credits: credits[0][0][0].user_credits, message: "Credits added succesfully!" } })
         }
         catch (error) {
-            return res.json({ status: false, data: { error, message: "There was an error" } })
+            return res.json({ success: false, data: { error, message: "There was an error" } })
         }
     }
 }
@@ -36,7 +36,7 @@ exports.updateCredits = async (req, res, next) => {
             }
         }
         catch (error) {
-            return res.json({ status: false, data: { error, message: "There was an error" } })
+            return res.json({ success: false, data: { error, message: "There was an error" } })
         }
     }
 }
@@ -52,7 +52,7 @@ exports.getCredits = async (req, res, next) => {
             })
             if (credits) {
                 return res.status(200).json({
-                    status: true,
+                    success: true,
                     data: {
                         credits: credits.userCredits
                     }
@@ -60,7 +60,7 @@ exports.getCredits = async (req, res, next) => {
             }
         }
         catch (error) {
-            return res.json({ status: false, data: { error, message: "There was an error" } })
+            return res.json({ success: false, data: { error, message: "There was an error" } })
         }
     }
 }

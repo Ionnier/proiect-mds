@@ -26,7 +26,7 @@ exports.getService = async (req, res, next) => {
             idService: req.params.idService
         }
     })
-    res.status(200).json({ status: true, data: { data } })
+    res.status(200).json({ success: true, data: { data } })
 }
 
 exports.upgradeService = async (req, res, next) => {
@@ -77,6 +77,8 @@ exports.upgradeService = async (req, res, next) => {
             return next(new Error(e))
         }
     } else {
+        if (relationship.serviceLevel >= serviceData.serviceMaxLevel)
+            return next(new Error('Service is already maxed out'))
         const transaction = await sequelize.transaction();
         try {
             await models.users.decrement({
