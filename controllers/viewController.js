@@ -80,21 +80,5 @@ exports.getRoomsPage = async (req, res) => {
 
 exports.getRoomPage = async (req, res) => {
     const room = await roomsController.getRoom(req.params.idRoom)
-    res.locals.getValueOfPrivilege = (role) =>{
-        switch(role) {
-            case 'Participant':
-                return 0
-            case 'Admin':
-                return 1
-            case 'Owner':
-                return 2
-            default:
-                return undefined
-        } 
-    }
-    res.locals.testPrivilege = (current, oponent) => {
-        const getValueOfPrivilege = res.locals.getValueOfPrivilege
-        return getValueOfPrivilege(current)>getValueOfPrivilege(oponent)
-    }
     res.render("room", { room })
 }

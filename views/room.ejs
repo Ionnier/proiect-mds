@@ -28,7 +28,6 @@
                 <div class="participants">
                     <p>Other members of <%- room.roomName%>: </p>
                     <% const current_privilege = room.idUserUsersRoomparticipants.find(obj => {return obj.idUser == user.idUser}).roomparticipants %>
-                    <% console.log(current_privilege)%>
                     <% for(let member of room.idUserUsersRoomparticipants){ %>
                         <% if(member.idUser !=user.idUser){ %>
                             <!-- TODO: Room Options (Promote / Kick Users) -->
@@ -49,14 +48,20 @@
                                     </style>
                                 <nav id="user_menu<%- member.idUser%>">
                                     <ul>
+                                        <% if(getValueOfPrivilege(current_privilege.roomRole)==2 && getValueOfPrivilege(member.roomparticipants.roomRole)==0){%>
                                         <li>
-                                            <button>Open Image in New Tab</button>
+                                            <button>Promote User</button>
+                                        </li>
+                                        <%} else if(getValueOfPrivilege(current_privilege.roomRole)==ownerLevel) {%>
+                                            <li>
+                                                <button>Transfer Ownership</button>
+                                            </li>
+                                            <%} %>
+                                        <li>
+                                            <button onclick="if (confirm('Remove User?')) ">Remove User</button>
                                         </li>
                                         <li>
-                                            <button>Increase Rank</button>
-                                        </li>
-                                        <li>
-                                            <button>Kick User</button>
+                                            <button onclick="alert('TODO')">View User</button>
                                         </li>
                                     </ul>
                                 </nav>

@@ -3,6 +3,7 @@ const viewController = require('../controllers/viewController')
 const authController = require('../controllers/authController');
 const creditsController = require('../controllers/creditsController');
 const servicesController = require('../controllers/servicesController');
+const roomsController = require('../controllers/roomsController');
 
 const router = express.Router();
 
@@ -18,7 +19,7 @@ router.get('/logout', authController.protect, viewController.getLogOutPage)
 router.get("/play", authController.protect, servicesController.updateServices, creditsController.updateCredits, viewController.getPlayPage)
 
 router.get("/rooms", authController.protect, viewController.getRoomsPage)
-router.get("/room/:idRoom/", authController.protect, viewController.getRoomPage)
+router.get("/room/:idRoom/", authController.protect, roomsController.addRoomUtils, viewController.getRoomPage)
 
 router.get("/*", viewController.getGeneralPage)
 
