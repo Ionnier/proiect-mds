@@ -4,6 +4,7 @@ const session = require('express-session');
 const viewRouter = require('./routers/viewRouter');
 const creditsRouter = require('./routers/creditsRouter');
 const servicesRouter = require('./routers/servicesRouter');
+const roomsRouter = require('./routers/roomsRouter');
 
 const app = express();
 
@@ -34,6 +35,7 @@ app.use("/resources", express.static(__dirname + "/resources"))
 
 app.use('/api/credits', creditsRouter)
 app.use('/api/services', servicesRouter)
+app.use('/api/rooms', roomsRouter)
 app.use('/', viewRouter);
 
 app.use('*', (err, req, res, next) => {

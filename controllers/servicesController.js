@@ -26,11 +26,10 @@ exports.getService = async (req, res, next) => {
             idService: req.params.idService
         }
     })
-    res.status(200).json({ status: true, data: { data } })
+    res.status(200).json({ success: true, data: { data } })
 }
 
 exports.upgradeService = async (req, res, next) => {
-    console.log('asd')
     const serviceData = await models.services.findOne({
         where: {
             idService: req.params.idService
@@ -78,6 +77,8 @@ exports.upgradeService = async (req, res, next) => {
             return next(new Error(e))
         }
     } else {
+        if (relationship.serviceLevel >= serviceData.serviceMaxLevel)
+            return next(new Error('Service is already maxed out'))
         const transaction = await sequelize.transaction();
         try {
             await models.users.decrement({
@@ -110,7 +111,7 @@ function calculateCredits(service) {
 }
 
 exports.updateServices = async (req, res, next) => {
-    const data = await sequelize.query(`SELECT * from UpdateServies;`, {
+    const data = await sequelize.query(`SELECT * from UpdateServices;`, {
         where: {
             idUser: req.session.user.idUser
         }
