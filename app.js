@@ -39,7 +39,6 @@ app.use('/api/rooms', roomsRouter)
 app.use('/', viewRouter);
 
 app.use('*', (err, req, res, next) => {
-    console.log(req.originalUrl)
     if (req.originalUrl.startsWith('/api'))
         return res.status(418).json({ success: false, message: err.message })
     res.status(418).render("error", { statuscode: 418, image: "/resources/images/error.png", err: err })

@@ -30,7 +30,6 @@ exports.getRoom = async (idRoom) => {
 }
 
 exports.currentPrivilege = async (req, res, next) => {
-    console.log(req.body)
     const privilege = await models.roomparticipants.findOne({
         where: {
             idUser: req.session.user.idUser,
@@ -38,14 +37,12 @@ exports.currentPrivilege = async (req, res, next) => {
         }
     })
     res.locals.privilege = privilege
-    console.log(res.locals.privilege)
     next()
 }
 
 // TODO: Finish remove/promote logic
 // TODO: Add memeber logic
 exports.removeUser = async (req, res) => {
-    console.log('hello')
     const otherUser = await models.roomparticipants.findOne({
         where: {
             idUser: req.params.idUser,
@@ -55,7 +52,6 @@ exports.removeUser = async (req, res) => {
     if (otherUser) {
         if (roomPrivilegeUtils.testPrivilege(res.locals.privilege.roomRole, otherUser.roomRole)) {
             await otherUser.destroy()
-            console.log('hello2')
             return res.status(200).json({ success: true })
         }
         return res.status(500).json({ success: false, message: 'There was an error.'  })
@@ -101,7 +97,6 @@ exports.increasePrivilege = async (req, res, next) =>{
             idRoom: res.locals.privilege.idRoom
         }
     })
-    console.log(result)
     res.status(200).json({success: true})
 }
 
@@ -120,7 +115,7 @@ exports.addUser = async (req, res, next) => {
         }]
     })
     if (!otherUser)
-        return next(new Error('An user with such an username doesn\t exist.'))
+        return next(new Error('An user with such an username doesn\'t exist.'))
     if (otherUser.roomparticipants.length!=0)
         return next(new Error(`${otherUser.firstName} ${otherUser.lastName} is already in this room.`))
     await models.roomparticipants.create({
@@ -128,6 +123,45 @@ exports.addUser = async (req, res, next) => {
         idUser: otherUser.idUser
     })
     res.status(200).json({success: true, message: 'User added succesfully.'})
+}
+
+exports.renameRoom = async(req, res, next) =>{
+    if (roomPrivilegeUtils.getValueOfPrivilege(res.locals.privilege.roomRole) < 1)
+        return next(new Error('Not enough privileges'))
+    try{
+        await models.rooms.update({
+            roomName: req.body.roomName
+        }, {
+            where: {
+                idRoom: req.params.idRoom
+            }
+        })
+        res.status(200).json({success: true, message: 'Room renamed succesfully.'})
+    } catch (e) {
+        return next(e)
+    }
+}
+
+exports.deleteRoom = async(req, res, next) =>{
+    if (roomPrivilegeUtils.getValueOfPrivilege(res.locals.privilege.roomRole) != roomPrivilegeUtils.ownerLevel)
+        return next(new Error('Not enough privileges'))
+    try{
+        await models.rooms.destroy({
+            where: {
+                idRoom: req.params.idRoom
+            }
+        })
+        await models.rooms.delete({
+            roomName: req.body.roomName
+        }, {
+            where: {
+                idRoom: req.params.idRoom
+            }
+        })
+        res.status(200).json({success: true, message: 'Room renamed succesfully.'})
+    } catch (e) {
+        return next(e)
+    }
 }
 
 exports.addRoomUtils = async (req, res, next) => {

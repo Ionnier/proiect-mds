@@ -5,6 +5,11 @@
     <title>Room - <%- room.roomName %>
     </title>
     <%- include("./fragments/head.ejs") %>
+        <style>
+            #room_options{
+                display: none;
+            }
+        </style>
         <script>
             function showForm() {
                 document.getElementById('inviteForm').style.display = 'block'
@@ -61,15 +66,60 @@
                 else
                     location.reload()
             }
+            async function renameRoom(){
+                const roomName = document.getElementById('rename_text').value
+                if (!roomName || roomName.length == 0)
+                    return
+                const body = { roomName }
+                const request = await fetch(`/api/rooms/<%- room.idRoom%>`, {
+                    method: 'POST',
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Content-Length": JSON.stringify(body).length
+                    },
+                    body: JSON.stringify(body)
+                })
+                const data = await request.json()
+                if (data.success == false)
+                    alert(data.message)
+                else
+                    location.reload()
+            }
+            <% if(getValueOfPrivilege(locals.privilege.roomRole) >= 1){ %>
+            function showRoomOptions(){
+                document.getElementById('room_options').style.display = 'block'
+                document.getElementsByTagName('h3')[0].style.display= 'none'
+            }
+            function hideRoomOptions(){
+                document.getElementsByTagName('h3')[0].style.display= 'block'
+                document.getElementById('room_options').style.display = 'none'
+            }
+            <%}%>
         </script>
 </head>
 
 <body>
     <%- include("./fragments/header.ejs") %>
         <main>
-            <h3>
+            <% //TODO: h3 hidden, display textbox, rename button changes name and refresh, add logic, finish commit%>
+            <% console.log(getValueOfPrivilege(locals.privilege.roomRole)) %>
+            <% if(getValueOfPrivilege(locals.privilege.roomRole) >= 1){%>
+            <h3 onclick="showRoomOptions()" tabindex='-1'>
                 <%- room.roomName %>
             </h3>
+            <div id="room_options" >
+                <input type="text" id="rename_text"> 
+                <button id="rename_button" onclick="renameRoom()">Rename</button>
+                <% if(getValueOfPrivilege(locals.privilege.roomRole) == ownerLevel){%>
+                    <button id="delete_button">Delete Room</button>
+                <%} %>
+                <button id="cancel_button" onclick="hideRoomOptions()">Cancel</button>
+            </div>
+            <%} else { %>
+                <h3>
+                    <%- room.roomName %>
+                </h3>
+                <%} %>
             <!-- TODO: Room Options (Roll Service) -->
             <% if(room.idUserUsersRoomparticipants.length>1){ %>
                 <div class="participants">
@@ -77,7 +127,6 @@
                     <% const current_privilege = room.idUserUsersRoomparticipants.find(obj => {return obj.idUser == user.idUser}).roomparticipants %>
                     <% for(let member of room.idUserUsersRoomparticipants){ %>
                         <% if(member.idUser !=user.idUser){ %>
-                            <!-- TODO: Room Options (Promote / Kick Users) -->
                             <div class="participant>" id="participant_div<%- member.idUser%>" tabindex="-1">
                                 <p>
                                     <%- `${member.userFirstName} ${member.userLastName} -
@@ -127,13 +176,9 @@
                         <div id="inviteForm" style="display: none;">
                             <form onsubmit="addUser(); return false;">
                                 <input type="text" id="memberContactInfo">
-                                <!-- TODO: Room Options (Handle events) -->
                                 <input type="submit" value="Send"/>
                                 <input type="button" value="Cancel" onclick="hideForm()" />
                             </form>
-                            
-
-
                         </div>
         </main>
 
