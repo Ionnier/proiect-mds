@@ -47,12 +47,11 @@
                 return location.reload()
             }
             async function addUser(){
-                const idRoom = <%- room.idRoom %>
                 const userName = document.getElementById('memberContactInfo').value
                 if (!userName || userName.length==0)
                     return
-                const body = { idRoom, userName}
-                const request = await fetch(`/api/rooms/`, {
+                const body = { userName}
+                const request = await fetch(`/api/rooms/<%- room.idRoom%>`, {
                     method: 'POST',
                     headers: {
                         "Content-Type": "application/json",
@@ -72,7 +71,7 @@
                     return
                 const body = { roomName }
                 const request = await fetch(`/api/rooms/<%- room.idRoom%>`, {
-                    method: 'POST',
+                    method: 'PATCH',
                     headers: {
                         "Content-Type": "application/json",
                         "Content-Length": JSON.stringify(body).length
@@ -84,6 +83,16 @@
                     alert(data.message)
                 else
                     location.reload()
+            }
+            async function deleteRoom(){
+                const request = await fetch(`/api/rooms/<%- room.idRoom%>`, {
+                    method: 'DELETE'
+                })
+                const data = await request.json()
+                if (data.success == false)
+                    alert(data.message)
+                else
+                    window.location.replace('/')
             }
             <% if(getValueOfPrivilege(locals.privilege.roomRole) >= 1){ %>
             function showRoomOptions(){
@@ -111,7 +120,7 @@
                 <input type="text" id="rename_text"> 
                 <button id="rename_button" onclick="renameRoom()">Rename</button>
                 <% if(getValueOfPrivilege(locals.privilege.roomRole) == ownerLevel){%>
-                    <button id="delete_button">Delete Room</button>
+                    <button onclick="if(confirm(`Delete room <%- room.roomName %>`)) deleteRoom()" id="delete_button">Delete Room</button>
                 <%} %>
                 <button id="cancel_button" onclick="hideRoomOptions()">Cancel</button>
             </div>
