@@ -4,6 +4,50 @@
 <head>
     <title>Rooms</title>
     <%- include("./fragments/head.ejs") %>
+    <style>
+        #create_room_name{
+            display: none;
+        }
+        #init_room{
+            display: none;
+        }
+        #cancel_button{
+            display: none;
+        }
+    </style>
+    <script>
+        function hide_create_room_button(){
+            document.getElementById('create_room_button').style.display='none'
+            document.getElementById('create_room_name').style.display='block'
+            document.getElementById('init_room').style.display='block'
+            document.getElementById('cancel_button').style.display='block'
+        }
+        function show_create_room_button(){
+            document.getElementById('create_room_button').style.display='block'
+            document.getElementById('create_room_name').style.display='none'
+            document.getElementById('init_room').style.display='none'
+            document.getElementById('cancel_button').style.display='none'
+        }
+        async function create_room(){
+            const roomName = document.getElementById('create_room_name').value
+            if (!roomName || roomName.length == 0)
+                return
+            const body = { roomName }
+            const request = await fetch(`/api/rooms/`, {
+                method: 'POST',
+                headers: {
+                    "Content-Type": "application/json",
+                    "Content-Length": JSON.stringify(body).length
+                },
+                body: JSON.stringify(body)
+            })
+            const data = await request.json()
+            if (data.success == false)
+                alert(data.message)
+            else
+                location.reload()
+        }
+    </script>
 </head>
 
 <body>
@@ -21,7 +65,10 @@
                     </div>
                     <%} %>
             </div>
-            <input type="button" value="Create a new Room" onclick="alert('TODO: Go to create a Room')">
+            <input id='create_room_button' type="button" value="Create a new Room" onclick="hide_create_room_button()">
+            <input id="create_room_name">
+            <input id="init_room" type="button" value="Create Room" onclick="create_room()">
+            <input id="cancel_button" type="button" value="Cancel" onclick="show_create_room_button()">
         </main>
 
 </body>

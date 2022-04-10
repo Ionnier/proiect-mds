@@ -1,4 +1,5 @@
 const initModels = require("../models/init-models");
+const rooms = require("../models/rooms");
 const users = require("../models/users");
 const sequelize = require('../utils/db')
 const models = initModels(sequelize);
@@ -30,7 +31,6 @@ exports.getRoom = async (idRoom) => {
 }
 
 exports.currentPrivilege = async (req, res, next) => {
-    console.log(req.body)
     const privilege = await models.roomparticipants.findOne({
         where: {
             idUser: req.session.user.idUser,
@@ -38,14 +38,12 @@ exports.currentPrivilege = async (req, res, next) => {
         }
     })
     res.locals.privilege = privilege
-    console.log(res.locals.privilege)
     next()
 }
 
 // TODO: Finish remove/promote logic
 // TODO: Add memeber logic
 exports.removeUser = async (req, res) => {
-    console.log('hello')
     const otherUser = await models.roomparticipants.findOne({
         where: {
             idUser: req.params.idUser,
@@ -55,7 +53,6 @@ exports.removeUser = async (req, res) => {
     if (otherUser) {
         if (roomPrivilegeUtils.testPrivilege(res.locals.privilege.roomRole, otherUser.roomRole)) {
             await otherUser.destroy()
-            console.log('hello2')
             return res.status(200).json({ success: true })
         }
         return res.status(500).json({ success: false, message: 'There was an error.'  })
@@ -101,33 +98,77 @@ exports.increasePrivilege = async (req, res, next) =>{
             idRoom: res.locals.privilege.idRoom
         }
     })
-    console.log(result)
     res.status(200).json({success: true})
 }
 
 exports.addUser = async (req, res, next) => {
     if (res.locals.privilege.roomRole == 'Participant')
         return next(new Error(`You don't have enough privileges.`))
-    if (!req.body.userName || !req.body.idRoom || req.body.userName.length==0)
+    if (!req.body.userName || !req.params.idRoom || req.body.userName.length==0)
         return next(new Error('Not enough data.'))
     const otherUser = await models.users.findOne({
         where: {
             userName: req.body.userName
         }, include: [{
             model: models.roomparticipants, as: 'roomparticipants', required: false, where: {
-                idRoom: req.body.idRoom
+                idRoom: req.params.idRoom
             }
         }]
     })
     if (!otherUser)
-        return next(new Error('An user with such an username doesn\t exist.'))
+        return next(new Error('An user with such an username doesn\'t exist.'))
     if (otherUser.roomparticipants.length!=0)
         return next(new Error(`${otherUser.firstName} ${otherUser.lastName} is already in this room.`))
     await models.roomparticipants.create({
-        idRoom: req.body.idRoom,
+        idRoom: req.params.idRoom,
         idUser: otherUser.idUser
     })
     res.status(200).json({success: true, message: 'User added succesfully.'})
+}
+
+exports.renameRoom = async(req, res, next) =>{
+    if (roomPrivilegeUtils.getValueOfPrivilege(res.locals.privilege.roomRole) < 1)
+        return next(new Error('Not enough privileges'))
+    try{
+        await models.rooms.update({
+            roomName: req.body.roomName
+        }, {
+            where: {
+                idRoom: req.params.idRoom
+            }
+        })
+        res.status(200).json({success: true, message: 'Room renamed succesfully.'})
+    } catch (e) {
+        return next(e)
+    }
+}
+
+exports.createRoom = async(req,res,next)=>{
+    try{
+        const transaction = await sequelize.transaction()
+        const room = await models.rooms.create({roomName: req.body.roomName}, {transaction, returning: true})
+        await models.roomparticipants.create({idUser: req.session.user.idUser, idRoom: room.idRoom, roomRole: 'Owner'}, {transaction})
+        await transaction.commit()
+        res.status(200).json({success: true, message: 'Room created succesfully.'})
+    } catch(e){
+        return next(e)
+    }
+}
+
+exports.deleteRoom = async(req, res, next) =>{
+    if (roomPrivilegeUtils.getValueOfPrivilege(res.locals.privilege.roomRole) != roomPrivilegeUtils.ownerLevel)
+        return next(new Error('Not enough privileges'))
+    try{
+        await models.rooms.destroy({
+            where: {
+                idRoom: req.params.idRoom
+            }
+        })
+        res.status(200).json({success: true, message: 'Room deleted succesfully.'})
+        res.locals.room = undefined
+    } catch (e) {
+        return next(e)
+    }
 }
 
 exports.addRoomUtils = async (req, res, next) => {
