@@ -179,8 +179,9 @@
 
                 </div>
                 <%} else{ %>
-                    <p>There are curently no other users in this room. You should invite someone!</p>
+                    <p>There are curently no other users in this room.</p>
                     <%} %>
+                    <% if(getValueOfPrivilege(locals.privilege.roomRole) >= 1){%>
                         <input type="button" id="showInviteForm" value="Add other memebers" onclick="showForm()" />
                         <div id="inviteForm" style="display: none;">
                             <form onsubmit="addUser(); return false;">
@@ -189,6 +190,7 @@
                                 <input type="button" value="Cancel" onclick="hideForm()" />
                             </form>
                         </div>
+                        <%} %>
         </main>
 
 </body>
