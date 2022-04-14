@@ -104,6 +104,36 @@
                 document.getElementById('room_options').style.display = 'none'
             }
             <%}%>
+            async function createGame(){
+                const request = await fetch(`/api/rgg/<%- room.idRoom%>`, {method: 'POST'})
+                const data = await request.json()
+                if (data.success == false)
+                    alert(data.message)
+                else
+                    location.reload()
+
+            }
+            async function addOption(){
+                const optionName = document.getElementById('add_option').value
+                const points = document.getElementById('option_points').value
+                if (!optionName || optionName.length==0 || points==0)
+                    return
+                const body = { optionName, points}
+                const request = await fetch(`/api/rgg/option/<%- room.idRoom%>`, {
+                    method: 'POST',
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Content-Length": JSON.stringify(body).length
+                    },
+                    body: JSON.stringify(body)
+                })
+                const data = await request.json()
+                if (data.success == false){
+                    alert(data.message)
+                }
+                else
+                    location.reload()
+            }
         </script>
 </head>
 
@@ -191,6 +221,58 @@
                             </form>
                         </div>
                         <%} %>
+                        <% console.log(room.randomguessgames.length) %>
+                <br/>
+                <% if(!Object.values(room.randomguessgames).some(x => x.randomGuessGameFinishDate == null)){%>
+                    <button onclick="createGame()">Create a new game</button>
+                <% } %>
+                <% if(room.randomguessgames.length>0){ %>
+                <% room.randomguessgames.sort((a, b)=> {return a.randomGuessGameFinishDate - b.randomGuessGameFinishDate})%>
+                <div class="rgg-games">
+                    <% for(let game of room.randomguessgames){%>
+                        <% console.log(game) %>
+                        <div class="rgg-game">                            
+                            <pre>
+                                <%- JSON.stringify(game) %>
+                            </pre>
+                            <% if(game.randomGuessGameFinishDate == null) {%>
+                                <p class="rgg_time"> Created at: <%- game.randomGuessGameCreateDate%> </p>
+                                <% console.log('aaa', game) %>
+                                <% console.log('aaa', game.randomguessoptions) %>
+                                <% if(game.randomguessoptions.length>0){ %>
+                                    <% currentOptions = game.randomguessoptions.filter(e => e.idUser==user.idUser)%>
+                                    <p>Current options: </p>
+                                    <ul>
+                                        <% for(let elem of currentOptions){%>
+                                            <li> <%- elem.optionName%> (<%- elem.points %>)</li>
+                                            <%}%>
+                                    </ul>
+                                <%} %> 
+                                <input id="add_option">
+                                <input id="option_points" type="number" min="0" max="<%- user.userCredits %>">
+                                <button onclick="addOption()">Add new option</button>
+                                <button onclick="alert('TODO')">Mark as ready</button>
+                                <button onclick="alert('TODO')">Start game</button>
+
+
+                            <% } else {%>
+                                <p class="rgg_time"> Finished at: <%- game.randomGuessGameFinishDate%> </p>
+                                <% if(game.randomguessoptions.length>0){ %>
+                                    <p class="my_options"> My options: <%- game.randomguessoptions.filter(e => e.idUser==user.idUser).map(e => e.optionName).join(",")%></p>
+                                    <% const winningChoice = game.randomguessoptions.filter(e => e.winner==true)[0] %>
+                                    <% if(winningChoice != null){ %>
+                                        <p class="winning_choice">Winning Choice: <%- winning_choice.optionName %></p>
+                                        <% }%>
+
+                                <%} %> 
+                                
+                            <%} %>
+                        </div>
+                    <% }%>
+                </div>
+                <%} else{ %>
+                    <p> Theare are no games.</p>
+                    <%} %>
         </main>
 
 </body>

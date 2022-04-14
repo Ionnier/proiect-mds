@@ -4,6 +4,7 @@ const users = require("../models/users");
 const sequelize = require('../utils/db')
 const models = initModels(sequelize);
 const roomPrivilegeUtils = require('../utils/roomPrivilegeUtils')
+const Op = require('Sequelize').Op;
 
 exports.getRooms = async (idUser) => {
     if (idUser) {
@@ -17,7 +18,7 @@ exports.getRooms = async (idUser) => {
     }
 }
 
-exports.getRoom = async (idRoom) => {
+exports.getRoom = async (idRoom, idUser) => {
     if (idRoom) {
         return await models.rooms.findOne({
             where: {
@@ -25,6 +26,12 @@ exports.getRoom = async (idRoom) => {
             },
             include: [{
                 model: models.users, as: 'idUserUsersRoomparticipants', required: false
+            }, {
+                model: models.randomguessgames, as: 'randomguessgames', required: false, include: [{
+                    model: models.randomguessoptions, as: 'randomguessoptions', required: false, where: {
+                        [Op.or]: [{idUser}, {winner: true}]
+                    }
+                }]
             }]
         })
     }
@@ -37,6 +44,9 @@ exports.currentPrivilege = async (req, res, next) => {
             idRoom: req.params.idRoom || req.body.idRoom
         }
     })
+    if (!privilege){
+        return next(new Error('You aren\'t in this Room'))
+    }
     res.locals.privilege = privilege
     next()
 }

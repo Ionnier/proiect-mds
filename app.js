@@ -5,6 +5,7 @@ const viewRouter = require('./routers/viewRouter');
 const creditsRouter = require('./routers/creditsRouter');
 const servicesRouter = require('./routers/servicesRouter');
 const roomsRouter = require('./routers/roomsRouter');
+const randomGuessRouter = require('./routers/randomGuessRouter');
 
 const app = express();
 
@@ -36,6 +37,7 @@ app.use("/resources", express.static(__dirname + "/resources"))
 app.use('/api/credits', creditsRouter)
 app.use('/api/services', servicesRouter)
 app.use('/api/rooms', roomsRouter)
+app.use('/api/rgg/', randomGuessRouter)
 app.use('/', viewRouter);
 
 app.use('*', (err, req, res, next) => {
