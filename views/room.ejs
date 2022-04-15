@@ -111,7 +111,6 @@
                     alert(data.message)
                 else
                     location.reload()
-
             }
             async function addOption(){
                 const optionName = document.getElementById('add_option').value
@@ -134,6 +133,14 @@
                 else
                     location.reload()
             }
+            async function startGame(){
+                const request = await fetch(`/api/rgg/finish/<%- room.idRoom%>`)
+                const data = await request.json()
+                if (data.success == false)
+                    alert(data.message)
+                else
+                    location.reload()
+            }
         </script>
 </head>
 
@@ -141,7 +148,6 @@
     <%- include("./fragments/header.ejs") %>
         <main>
             <% //TODO: h3 hidden, display textbox, rename button changes name and refresh, add logic, finish commit%>
-            <% console.log(getValueOfPrivilege(locals.privilege.roomRole)) %>
             <% if(getValueOfPrivilege(locals.privilege.roomRole) >= 1){%>
             <h3 onclick="showRoomOptions()" tabindex='-1'>
                 <%- room.roomName %>
@@ -187,7 +193,6 @@
                                         <li>
                                             <button onclick="if (confirm('Promote to Admin?')) increasePrivilege(<%-`${member.roomparticipants.idRoom}, ${member.idUser}`%>) ">Promote</button>
                                         </li>
-                                        <% console.log(getValueOfPrivilege(current_privilege.roomRole), ownerLevel) %>
                                         <%}if(getValueOfPrivilege(current_privilege.roomRole)==ownerLevel) {%>
                                             <li>
                                                 <button onclick="if (confirm('Transfer Ownership?')) transferOwnership(<%-`${member.roomparticipants.idRoom}, ${member.idUser}`%>)">Transfer Ownership</button>
@@ -221,7 +226,6 @@
                             </form>
                         </div>
                         <%} %>
-                        <% console.log(room.randomguessgames.length) %>
                 <br/>
                 <% if(!Object.values(room.randomguessgames).some(x => x.randomGuessGameFinishDate == null)){%>
                     <button onclick="createGame()">Create a new game</button>
@@ -230,17 +234,11 @@
                 <% room.randomguessgames.sort((a, b)=> {return a.randomGuessGameFinishDate - b.randomGuessGameFinishDate})%>
                 <div class="rgg-games">
                     <% for(let game of room.randomguessgames){%>
-                        <% console.log(game) %>
                         <div class="rgg-game">                            
-                            <pre>
-                                <%- JSON.stringify(game) %>
-                            </pre>
                             <% if(game.randomGuessGameFinishDate == null) {%>
                                 <p class="rgg_time"> Created at: <%- game.randomGuessGameCreateDate%> </p>
-                                <% console.log('aaa', game) %>
-                                <% console.log('aaa', game.randomguessoptions) %>
                                 <% if(game.randomguessoptions.length>0){ %>
-                                    <% currentOptions = game.randomguessoptions.filter(e => e.idUser==user.idUser)%>
+                                    <% currentOptions = game.randomguessoptions.filter(e => e.idUser==user.idUser).reverse((a, b) => {return a.points - b.points})%>
                                     <p>Current options: </p>
                                     <ul>
                                         <% for(let elem of currentOptions){%>
@@ -252,16 +250,16 @@
                                 <input id="option_points" type="number" min="0" max="<%- user.userCredits %>">
                                 <button onclick="addOption()">Add new option</button>
                                 <button onclick="alert('TODO')">Mark as ready</button>
-                                <button onclick="alert('TODO')">Start game</button>
+                                <button onclick="startGame()">Start game</button>
 
 
                             <% } else {%>
                                 <p class="rgg_time"> Finished at: <%- game.randomGuessGameFinishDate%> </p>
                                 <% if(game.randomguessoptions.length>0){ %>
-                                    <p class="my_options"> My options: <%- game.randomguessoptions.filter(e => e.idUser==user.idUser).map(e => e.optionName).join(",")%></p>
+                                    <p class="my_options"> My options: <%- game.randomguessoptions.filter(e => e.idUser==user.idUser).map(e => `${e.optionName}(${e.points})`).join(",")%></p>
                                     <% const winningChoice = game.randomguessoptions.filter(e => e.winner==true)[0] %>
                                     <% if(winningChoice != null){ %>
-                                        <p class="winning_choice">Winning Choice: <%- winning_choice.optionName %></p>
+                                        <p class="winning_choice">Winning Choice: <%- `${winningChoice.optionName}(${winningChoice.idUserUser.userName}/${winningChoice.points})` %></p>
                                         <% }%>
 
                                 <%} %> 

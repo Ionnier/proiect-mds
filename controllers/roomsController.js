@@ -29,8 +29,10 @@ exports.getRoom = async (idRoom, idUser) => {
             }, {
                 model: models.randomguessgames, as: 'randomguessgames', required: false, include: [{
                     model: models.randomguessoptions, as: 'randomguessoptions', required: false, where: {
-                        [Op.or]: [{idUser}, {winner: true}]
-                    }
+                        [Op.or]: [{ idUser }, { winner: true }]
+                    }, include: [{
+                        model: models.users, as: 'idUserUser', required: false
+                    }]
                 }]
             }]
         })
