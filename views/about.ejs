@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>About</title>
+    <%- include("./fragments/head.ejs") %>
+        <style>
+            #info {
+                display: grid;
+                text-align: center;
+                grid-template-columns: 50% 50%;
+            }
+        </style>
+</head>
+
+<body>
+    <%- include("./fragments/header.ejs") %>
+        <h2>About</h2>
+        <div id="info">
+            <div class="text_container">
+                <h3>Objective</h3>
+                <!-- TODO: Add objective image -->
+                <p> Project created for the laboratory of "Methods of Software Development".</p>
+                <p> The aim of this project is to show that we are able to deliver an high quality application which
+                    contains
+                    all the basic elements of an modern application.</p>
+                <p> As such I included the use of an MVC arhitecture using Sequelize as an ORM delivered in a Docker
+                    container
+                    for ease of deployment.</p>
+            </div>
+            <div class="text_container">
+                <h3>Idea</h3>
+                <!-- TODO: Add idea image -->
+                <p>Inspired by a very common problem, having to choose a certain activity with other people.</p>
+                <p>Choosing an activity is an effective way of showing how you feel about something or about someone
+                    else.</p>
+                <p>As such, if the opinion of the other person is more important, you tend to let them choose. If you
+                    meet someone with the same quality, then no one chooses. And this project aims to solve this
+                    problem.</p>
+                <p>By choosing randomly you can just do "everything"/"whatever".</p>
+                <p>By choosing with some sort of currency you can use your "power" to take control of the choice.</p>
+                <p>By being able to give this "power" to the other person you can still show this quality of making them
+                    feel like the choice matters.</p>
+                <p>And if they know, then the Universe remains with the same problems.</p>
+            </div>
+        </div>
+        <!-- TODO: Add random image -->
+
+
+</body>
+
+</html>
