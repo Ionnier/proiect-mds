@@ -1,20 +1,20 @@
 const Sequelize = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  return boughtservices.init(sequelize, DataTypes);
+  return randomguessoptions.init(sequelize, DataTypes);
 }
 
-class boughtservices extends Sequelize.Model {
+class randomguessoptions extends Sequelize.Model {
   static init(sequelize, DataTypes) {
   return super.init({
-    idService: {
+    idRandomGuessGame: {
       type: DataTypes.INTEGER,
       allowNull: false,
       primaryKey: true,
       references: {
-        model: 'services',
-        key: 'id_service'
+        model: 'randomguessgames',
+        key: 'id_random_guess_game'
       },
-      field: 'id_service'
+      field: 'id_random_guess_game'
     },
     idUser: {
       type: DataTypes.INTEGER,
@@ -26,35 +26,35 @@ class boughtservices extends Sequelize.Model {
       },
       field: 'id_user'
     },
-    serviceLevel: {
+    optionName: {
+      type: DataTypes.TEXT,
+      allowNull: false,
+      primaryKey: true,
+      field: 'option_name'
+    },
+    winner: {
+      type: DataTypes.BOOLEAN,
+      allowNull: true,
+      defaultValue: false
+    },
+    points: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      defaultValue: 1,
-      field: 'service_level'
-    },
-    serviceLastCheck: {
-      type: DataTypes.DATE,
-      allowNull: true,
-      defaultValue: Sequelize.Sequelize.fn('now'),
-      field: 'service_last_check'
-    },
-    serviceImage: {
-      type: DataTypes.STRING(500),
-      allowNull: true,
-      field: 'service_image'
+      defaultValue: 0
     }
   }, {
     sequelize,
-    tableName: 'boughtservices',
+    tableName: 'randomguessoptions',
     schema: 'public',
     timestamps: false,
     indexes: [
       {
-        name: "pk_bought_services",
+        name: "pk_rgo",
         unique: true,
         fields: [
-          { name: "id_service" },
+          { name: "id_random_guess_game" },
           { name: "id_user" },
+          { name: "option_name" },
         ]
       },
     ]
