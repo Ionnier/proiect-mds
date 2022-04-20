@@ -4,32 +4,62 @@
 <head>
     <title>Sign Up</title>
     <%- include("./fragments/head.ejs") %>
+        <link rel="stylesheet" href="/resources/css/form.css" type="text/css">
+        <style>
+            main {
+                margin-left: auto;
+                margin-right: auto;
+                width: 75%;
+                display: grid;
+                grid-template-columns: 25% 75%;
+            }
+
+            /* TODO: Center vertically */
+            img {
+                max-height: 50vh;
+            }
+        </style>
 </head>
 
 <body>
     <%- include("./fragments/header.ejs") %>
         <main>
             <form method="post" action="/signup" enctype="multipart/form-data">
-                <label for="firstname">First Name:</label>
-                <input type="firstname" id="firstname" name="firstname"> <br>
+                <div class="form_element">
+                    <label for="firstname">First Name:</label>
+                    <input type="firstname" id="firstname" name="firstname"> <br>
+                </div>
 
-                <label for="lastname">Last Name:</label>
-                <input type="lastname" id="lastname" name="lastname"><br>
+                <div class="form_element">
+                    <label for="lastname">Last Name:</label>
+                    <input type="lastname" id="lastname" name="lastname"><br>
+                </div>
 
-                <label for="username">User Name:</label>
-                <input type="text" id="username" name="username"><br>
+                <div class="form_element">
+                    <label for="username">User Name:</label>
+                    <input type="text" id="username" name="username"><br>
+                </div>
 
-                <label for="email">Email:</label>
-                <input type="email" id="email" name="email"><br>
+                <div class="form_element">
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" name="email"><br>
+                </div>
 
-                <label for="password">Password:</label>
-                <input type="password" id="password" name="password"><br>
-                <input type="submit" value="Sign Up" />
+                <div class="form_element">
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" name="password"><br>
+                </div>
+
+                <% if(locals.error && locals.error==true){%>
+                    <p class="error"> An error occured: <%- locals.message %>
+                    </p>
+                    <%} %>
+
+                        <input type="submit" value="Sign Up" />
             </form>
-            <% if(locals.error && locals.error==true){%>
-                <p class="error"> An error occured: <%- locals.message %>
-                </p>
-                <%} %>
+            <!-- TODO: Random Image -->
+            <img src="/resources/images/error.png" alt="Random Image">
+
         </main>
 </body>
 

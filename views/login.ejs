@@ -4,8 +4,20 @@
 <head>
     <title>Login</title>
     <%- include("./fragments/head.ejs") %>
+        <link rel="stylesheet" href="/resources/css/form.css" type="text/css">
         <style>
+            main {
+                margin-left: auto;
+                margin-right: auto;
+                width: 75%;
+                display: grid;
+                grid-template-columns: 25% 75%;
+            }
 
+            /* TODO: Center vertically */
+            img {
+                max-height: 50vh;
+            }
         </style>
 </head>
 
@@ -21,12 +33,14 @@
                     <label for="password">Password:</label><br>
                     <input type="password" id="password" name="password">
                 </div>
-                <input type="submit" value="Login" />
+                <% if(locals.error && locals.error==true){%>
+                    <p class="error"> An error occured: <%- locals.message %>
+                    </p>
+                    <%} %>
+                        <input type="submit" value="Login" />
             </form>
-            <% if(locals.error && locals.error==true){%>
-                <p class="error"> An error occured: <%- locals.message %>
-                </p>
-                <%} %>
+            <!-- TODO: Random Image -->
+            <img src="/resources/images/error.png" alt="Random Image">
         </main>
 </body>
 
