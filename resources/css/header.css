@@ -1,0 +1,51 @@
+#logo_div {
+    display: grid;
+    grid-template-columns: auto auto;
+}
+#logo_div img{
+    max-height: 10vh;
+    margin-left: 0px;
+}
+#logo_div p{
+    display: inline-block;
+    margin-left: auto;
+    margin-right: auto;
+    font-size: 10vh;
+    padding: 0px;
+    margin: 0px;
+    color: var(--color_primary);
+    align-self: flex-end;
+}
+
+
+header li{
+    display: inline-block;
+    text-align: center;
+    width: 10vw;
+    padding: 0.25vw 0.75vw 0.25vw 0.75vw ;
+    border: 1px solid black;
+    list-style: none;
+    background-color: var(--color_primary);
+}
+
+header li:hover{
+    background-color: var(--color_secondary);
+}
+
+header li:hover a{
+    color: var(--color_primary);
+}
+
+header a{
+    width: 100%;
+    height: 100%;
+    text-decoration: none;
+    display: block;
+    color: var(--color_secondary);
+    padding: 0px;
+}
+
+header ul{
+    padding: 0px;
+}
+

@@ -8,7 +8,11 @@
 
 <body>
     <%- include("./fragments/header.ejs") %>
-    <h1>Hello!</h1>
+        <h1>Welcome!</h1>
+        <p> To learn more about this project go to the <a href="/about">About</a> page.</p>
+        <% if(!user){ %>
+            <p> To continue using this product please <a href="/login">log in</a>.</p>
+            <% } %>
 </body>
 
 </html>
