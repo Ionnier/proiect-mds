@@ -4,50 +4,91 @@
 <head>
     <title>Rooms</title>
     <%- include("./fragments/head.ejs") %>
-    <style>
-        #create_room_name{
-            display: none;
-        }
-        #init_room{
-            display: none;
-        }
-        #cancel_button{
-            display: none;
-        }
-    </style>
-    <script>
-        function hide_create_room_button(){
-            document.getElementById('create_room_button').style.display='none'
-            document.getElementById('create_room_name').style.display='block'
-            document.getElementById('init_room').style.display='block'
-            document.getElementById('cancel_button').style.display='block'
-        }
-        function show_create_room_button(){
-            document.getElementById('create_room_button').style.display='block'
-            document.getElementById('create_room_name').style.display='none'
-            document.getElementById('init_room').style.display='none'
-            document.getElementById('cancel_button').style.display='none'
-        }
-        async function create_room(){
-            const roomName = document.getElementById('create_room_name').value
-            if (!roomName || roomName.length == 0)
-                return
-            const body = { roomName }
-            const request = await fetch(`/api/rooms/`, {
-                method: 'POST',
-                headers: {
-                    "Content-Type": "application/json",
-                    "Content-Length": JSON.stringify(body).length
-                },
-                body: JSON.stringify(body)
-            })
-            const data = await request.json()
-            if (data.success == false)
-                alert(data.message)
-            else
-                location.reload()
-        }
-    </script>
+        <style>
+            #create_room_name {
+                display: none;
+                margin-bottom: 1vh;
+            }
+
+            #init_room {
+                display: none;
+                margin-bottom: 1vh;
+
+            }
+
+            #cancel_button {
+                display: none;
+                margin-bottom: 1vh;
+
+            }
+
+            .rooms {
+                display: grid;
+                <% flag = false %>
+                <% for (let i=Math.min(5, rooms.length); i >= 2 ; i--) { %> 
+                    <% if ( rooms.length % i == 0) { %>
+                        <% flag = true %>
+                        grid-template-columns: <%- "auto ".repeat(i) %>;
+                        <%break; } %>             
+                <% } %>
+                <% if (!flag){ %>
+                    grid-template-columns: <%- "auto ".repeat(3) %>;
+                <% } %>
+                gap: 2.5vw;
+            }
+            .room {
+                display: flex;
+                flex-direction: column;
+                border: 2px solid var(--color_primary);
+                border-radius: 5px;
+            }
+            .room > * {
+                margin-bottom: 5vh;
+                content: center;
+                display: block;
+                margin-left: auto;
+                margin-right: auto;
+            }
+            .room img {
+                max-height: 10vh;
+            }
+            .rooms {
+                margin-bottom: 1.5vh;
+            }
+        </style>
+        <script>
+            function hide_create_room_button() {
+                document.getElementById('create_room_button').style.display = 'none'
+                document.getElementById('create_room_name').style.display = 'block'
+                document.getElementById('init_room').style.display = 'block'
+                document.getElementById('cancel_button').style.display = 'block'
+            }
+            function show_create_room_button() {
+                document.getElementById('create_room_button').style.display = 'block'
+                document.getElementById('create_room_name').style.display = 'none'
+                document.getElementById('init_room').style.display = 'none'
+                document.getElementById('cancel_button').style.display = 'none'
+            }
+            async function create_room() {
+                const roomName = document.getElementById('create_room_name').value
+                if (!roomName || roomName.length == 0)
+                    return
+                const body = { roomName }
+                const request = await fetch(`/api/rooms/`, {
+                    method: 'POST',
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Content-Length": JSON.stringify(body).length
+                    },
+                    body: JSON.stringify(body)
+                })
+                const data = await request.json()
+                if (data.success == false)
+                    alert(data.message)
+                else
+                    location.reload()
+            }
+        </script>
 </head>
 
 <body>
