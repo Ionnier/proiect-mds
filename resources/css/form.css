@@ -1,0 +1,26 @@
+form {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+}
+
+
+.form_element * {
+    margin: 1vh;
+}
+
+form p {
+    width: 25%;
+}
+
+.form_element {
+    margin-bottom: 1vw;
+}
+
+.form_element label{
+    display: block;
+}
+
+form p {
+    color: var(--color_secondary_alternative);
+}

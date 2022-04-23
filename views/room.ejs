@@ -9,6 +9,26 @@
             #room_options{
                 display: none;
             }
+
+            #rgg-games {
+                display: grid;
+                grid-template-columns: auto auto auto auto;
+            }
+            #rgg-games .in_progress_rgg{
+                grid-column: 1 / span 4;
+                grid-row: 1;
+            }
+            
+            .rgg-game{
+                margin: 1vh;
+                padding: 5vh;
+                border: 0.25vh solid black;
+                border-radius: 5vh;
+            }
+
+            #add_option, #option_points {
+                display: none;
+            }
         </style>
         <script>
             function showForm() {
@@ -113,6 +133,11 @@
                     location.reload()
             }
             async function addOption(){
+                if(document.getElementById('add_option').style.display == "") {
+                    document.getElementById('add_option').style.display = 'inline-block'
+                    document.getElementById('option_points').style.display = 'inline-block'
+                    return
+                }
                 const optionName = document.getElementById('add_option').value
                 const points = document.getElementById('option_points').value
                 if (!optionName || optionName.length==0 || points==0)
@@ -231,10 +256,10 @@
                     <button onclick="createGame()">Create a new game</button>
                 <% } %>
                 <% if(room.randomguessgames.length>0){ %>
-                <% room.randomguessgames.sort((a, b)=> {return a.randomGuessGameFinishDate - b.randomGuessGameFinishDate})%>
-                <div class="rgg-games">
+                <% room.randomguessgames.sort((a, b)=> {return b.randomGuessGameFinishDate - a.randomGuessGameFinishDate})%>
+                <div id="rgg-games">
                     <% for(let game of room.randomguessgames){%>
-                        <div class="rgg-game">                            
+                        <div class="rgg-game <%- game.randomGuessGameFinishDate? 'finished_rgg' : 'in_progress_rgg' %>">                            
                             <% if(game.randomGuessGameFinishDate == null) {%>
                                 <p class="rgg_time"> Created at: <%- game.randomGuessGameCreateDate%> </p>
                                 <% if(game.randomguessoptions.length>0){ %>
@@ -256,11 +281,18 @@
                             <% } else {%>
                                 <p class="rgg_time"> Finished at: <%- game.randomGuessGameFinishDate%> </p>
                                 <% if(game.randomguessoptions.length>0){ %>
-                                    <p class="my_options"> My options: <%- game.randomguessoptions.filter(e => e.idUser==user.idUser).map(e => `${e.optionName}(${e.points})`).join(",")%></p>
+                                    <p class="my_options"> My options: <%- game.randomguessoptions.filter(e => e.idUser==user.idUser).sort((a, b) => {return a.points - b.points}).reverse().map(e => `${e.optionName}(${e.points})`).join(",")%></p>
                                     <% const winningChoice = game.randomguessoptions.filter(e => e.winner==true)[0] %>
                                     <% if(winningChoice != null){ %>
                                         <p class="winning_choice">Winning Choice: <%- `${winningChoice.optionName}(${winningChoice.idUserUser.userName}/${winningChoice.points})` %></p>
                                         <% }%>
+                                    <p class="total_players"> Players that joined: <ul>
+                                        <% console.log(game) %>
+                                        <% for(let user of new Set(game.randomguessoptions.map(e => JSON.stringify(e.idUserUser.dataValues)))) { user = JSON.parse(user)%>
+                                            <li> <%- `${user.userName}` %></li>
+                                        <%} %>
+
+                                    </ul></p>
 
                                 <%} %> 
                                 

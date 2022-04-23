@@ -5,34 +5,35 @@
     <title>Error</title>
     <%- include("./fragments/head.ejs") %>
         <style>
-            img {
+            #error_image {
                 width: 25%;
                 margin: 0 auto;
                 display: block;
             }
 
             pre {
-                width: 50%;
+                overflow: scroll;
+                width: 90%;
             }
         </style>
 </head>
 
 <body>
     <%- include("./fragments/header.ejs") %>
-    <main>
-        <div class="text-container">
-            <h2>
-                <%- locals.statuscode || "Unknown error" %>
-            </h2>
-            <img src="<%-locals.image%>" alt="Error message">
-            <% if ((err) && (err.stack)){ %>
-                <hr>
-                <pre>
+        <main>
+            <div class="text-container">
+                <h2>
+                    <%- locals.statuscode || "Unknown error" %>
+                </h2>
+                <img id="error_image" src="<%-locals.image%>" alt="Error message">
+                <% if ((err) && (err.stack)){ %>
+                    <hr>
+                    <pre>
                         <%- err.stack %>
                     </pre>
-                <% } %>
-        </div>
-    </main>
+                    <% } %>
+            </div>
+        </main>
 </body>
 
 </html>

@@ -6,26 +6,57 @@
     <%- include("./fragments/head.ejs") %>
         <style>
             #clicker_button {
+                height: 25%;
+                width: 100%;
                 padding: 15px 25px;
                 font-size: 24px;
                 text-align: center;
                 cursor: pointer;
                 outline: none;
                 color: #fff;
-                background-color: #04AA6D;
+                background-color: var(--color_primary);
                 border: none;
                 border-radius: 15px;
-                box-shadow: 0 9px #999;
+                box-shadow: 0 2vh var(--color_primary_alternative);
             }
 
             #clicker_button:hover {
-                background-color: #3e8e41
+                background-color: var(--color_secondary)
             }
 
             #clicker_button:active {
-                background-color: #3e8e41;
-                box-shadow: 0 5px #666;
-                transform: translateY(4px);
+                background-color: var(--color_secondary_alternative);
+                box-shadow: 0 1.5vh var(--color_primary_alternative);
+                transform: translateY(0.5vh);
+            }
+
+            main {
+                display: grid;
+                grid-template-columns: auto 25% auto;
+                grid-column-gap: 2.5vw;
+                align-content: space-around;
+                justify-content: space-between;
+            }
+
+            #services_div {
+                display: flex;
+                flex-direction: column;
+            }
+
+            .service .serviceName,
+            .service .serviceDescription,
+            .service .serviceLevel,
+            .service .serviceValue,
+            .service .servicePrice {
+                text-align: center;
+            }
+
+            .service {
+                margin-bottom: 3vh;
+                display: flex;
+                flex-direction: column;
+                background-color: var(--color_primary_alternative);
+                color: var(--color_secondary_alternative);
             }
         </style>
 
@@ -67,7 +98,7 @@
                     return
                 if (serviceData.success) {
                     const obj = serviceData.data.data[0]
-                    div.getElementsByClassName('serviceName')[0].innerHTML = `Name: ${obj.serviceName}`
+                    div.getElementsByClassName('serviceName')[0].innerHTML = `${obj.serviceName}`
                     div.getElementsByClassName('serviceDescription')[0].innerHTML = `Description: ${obj.serviceDescription}`
                     let price
                     let value
@@ -83,7 +114,7 @@
                     }
                     div.getElementsByClassName('servicePrice')[0].innerHTML = `Price: ${price}`
                     div.getElementsByClassName('serviceValue')[0].innerHTML = `Value per Cycle: ${value}`
-                    div.getElementsByClassName('level')[0].value = parseInt(level)
+                    document.getElementById(`level${idService}`).innerHTML = `Level: ${level} (${obj.serviceMaxLevel})`
                 }
                 if (automatic) {
                     map.set(`service${idService}`, false)
@@ -91,22 +122,13 @@
             }
 
             async function onChangeInput(args) {
-                if (parseInt(args.oldvalue) > parseInt(args.value)) {
-                    args.value = args.oldvalue
-                } else {
-                    let id
-                    for (let x of args.classList) {
-                        if (x.startsWith('id_service')) {
-                            id = parseInt(x.replace('id_service', ''))
-                        }
-                    }
-                    const data = await fetch(`/api/services/increase/${id}`)
-                    const json = await data.json()
-                    await updateService(id)
+                const data = await fetch(`/api/services/increase/${args}`)
+                const json = await data.json()
+                if (json.success == true) {
+                    await updateService(args)
                     await updateViewCredits()
-                    if (json.success == true) {
-                        return true
-                    }
+                } else {
+                    alert(json.message)
                 }
             }
             window.addEventListener('load', async () => {
@@ -138,54 +160,63 @@
 <body>
     <%- include("./fragments/header.ejs") %>
         <h2>Play</h2>
-        <p id="credits_score"> You currently have <%- locals.user.userCredits%> credits.</p>
-        <button id="clicker_button" onclick="increaseCounter()">
-        </button>
 
-        <% if(locals.services){ %>
-            <div id="services_div">
-                <% for(let service of locals.services){ %>
-                    <div class="service service<%-service.idService %> ">
-                        <p class="serviceName">Name:
-                            <%- service.serviceName %>
-                        </p>
-                        <p class="serviceDescription">Description:
-                            <%- service.serviceDescription %>
-                        </p>
-                        <% let price %>
-                            <% let value %>
-                                <% let level %>
-                                    <% if(service.boughtservices.length>0){ %>
-                                        <% level=service.boughtservices[0].serviceLevel %>
-                                            <% price=service.serviceBasePrice * Math.pow(service.servicePriceModifier,
-                                                level) %>
-                                                <% value=service.serviceBaseValue *
-                                                    Math.pow(service.serviceValueModifier, level) %>
-                                                    <% } else{ %>
-                                                        <% price=service.serviceBasePrice %>
-                                                            <% value=service.serviceBaseValue %>
-                                                                <% level=0 %>
-                                                                    <%} %>
-                                                                        <p class="servicePrice">
-                                                                            Price: <%- price %>
-                                                                        </p>
-                                                                        <p class="serviceValue">
-                                                                            Value per Cycle: <%- value %>
-                                                                        </p>
-                                                                        <p>Level:</p>
-                                                                        <input type="number"
-                                                                            class="level id_service<%-service.idService %>"
-                                                                            min="0" max="<%- service.serviceMaxLevel %>"
-                                                                            onfocus="this.oldvalue = this.value;"
-                                                                            step="1" value="<%- level %>"
-                                                                            onKeyDown="return false"
-                                                                            onchange="onChangeInput(this);this.oldvalue = this.value;">
-                    </div>
-                    <% }%>
+        <main>
 
+            <div id="info">
+                <p id="credits_score"> You currently have <%- locals.user.userCredits%> credits.</p>
             </div>
 
-            <% }%>
+            <div id="click_button">
+
+                <button id="clicker_button" onclick="increaseCounter()">
+                </button>
+            </div>
+
+            <% if(locals.services){ %>
+                <div id="services_div">
+                    <% for(let service of locals.services){ %>
+                        <div class="service service<%-service.idService %> ">
+                            <p class="serviceName">
+                                <%- service.serviceName %>
+                            </p>
+                            <p class="serviceDescription">Description:
+                                <%- service.serviceDescription %>
+                            </p>
+                            <% let price %>
+                                <% let value %>
+                                    <% let level %>
+                                        <% if(service.boughtservices.length>0){ %>
+                                            <% level=service.boughtservices[0].serviceLevel %>
+                                                <% price=service.serviceBasePrice *
+                                                    Math.pow(service.servicePriceModifier, level) %>
+                                                    <% value=service.serviceBaseValue *
+                                                        Math.pow(service.serviceValueModifier, level) %>
+                                                        <% } else{ %>
+                                                            <% price=service.serviceBasePrice %>
+                                                                <% value=service.serviceBaseValue %>
+                                                                    <% level=0 %>
+                                                                        <%} %>
+                                                                            <p class="servicePrice">
+                                                                                Price: <%- price %>
+                                                                            </p>
+                                                                            <p class="serviceValue">
+                                                                                Value per Cycle: <%- value %>
+                                                                            </p>
+                                                                            <p class="serviceLevel"
+                                                                                id="level<%- service.idService %>">
+                                                                                Level: <%- level %>
+                                                                                    (<%-service.serviceMaxLevel %>)
+                                                                            </p>
+                                                                            <input type="button" value="Upgrade"
+                                                                                onclick="onChangeInput(<%- service.idService%>)">
+
+                        </div>
+                        <% }%>
+
+                </div>
+                <% }%>
+        </main>
 
 </body>
 

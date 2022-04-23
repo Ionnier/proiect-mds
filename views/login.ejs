@@ -4,24 +4,44 @@
 <head>
     <title>Login</title>
     <%- include("./fragments/head.ejs") %>
+        <link rel="stylesheet" href="/resources/css/form.css" type="text/css">
+        <style>
+            main {
+                margin-left: auto;
+                margin-right: auto;
+                width: 75%;
+                display: grid;
+                grid-template-columns: 25% 75%;
+            }
+
+            /* TODO: Center vertically */
+            img {
+                max-height: 50vh;
+            }
+        </style>
 </head>
 
 <body>
     <%- include("./fragments/header.ejs") %>
-    <main>
-        <form method="post" action="/login" enctype="multipart/form-data">
-            <label for="username">User Name:</label><br>
-            <input type="text" id="username" name="username"><br>
-            <label for="password">Password:</label><br>
-            <input type="password" id="password" name="password">
-            <br>
-            <input type="submit" value="Login" />
-        </form>
-        <% if(locals.error && locals.error==true){%>
-            <p class="error"> An error occured: <%- locals.message %>
-            </p>
-            <%} %>
-    </main>
+        <main>
+            <form method="post" action="/login" enctype="multipart/form-data">
+                <div class="form_element">
+                    <label for="username">User Name:</label><br>
+                    <input type="text" id="username" name="username"><br>
+                </div>
+                <div class="form_element">
+                    <label for="password">Password:</label><br>
+                    <input type="password" id="password" name="password">
+                </div>
+                <% if(locals.error && locals.error==true){%>
+                    <p class="error"> An error occured: <%- locals.message %>
+                    </p>
+                    <%} %>
+                        <input type="submit" value="Login" />
+            </form>
+            <!-- TODO: Random Image -->
+            <img src="/resources/images/error.png" alt="Random Image">
+        </main>
 </body>
 
 </html>
