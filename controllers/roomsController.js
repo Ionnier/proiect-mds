@@ -28,9 +28,7 @@ exports.getRoom = async (idRoom, idUser) => {
                 model: models.users, as: 'idUserUsersRoomparticipants', required: false
             }, {
                 model: models.randomguessgames, as: 'randomguessgames', required: false, include: [{
-                    model: models.randomguessoptions, as: 'randomguessoptions', required: false, where: {
-                        [Op.or]: [{ idUser }, { winner: true }]
-                    }, include: [{
+                    model: models.randomguessoptions, as: 'randomguessoptions', include: [{
                         model: models.users, as: 'idUserUser', required: false
                     }]
                 }]
@@ -40,17 +38,22 @@ exports.getRoom = async (idRoom, idUser) => {
 }
 
 exports.currentPrivilege = async (req, res, next) => {
-    const privilege = await models.roomparticipants.findOne({
-        where: {
-            idUser: req.session.user.idUser,
-            idRoom: req.params.idRoom || req.body.idRoom
+    try{
+        const privilege = await models.roomparticipants.findOne({
+            where: {
+                idUser: req.session.user.idUser,
+                idRoom: req.params.idRoom || req.body.idRoom
+            }
+        })
+        if (!privilege){
+            return next(new Error('You aren\'t in this Room'))
         }
-    })
-    if (!privilege){
-        return next(new Error('You aren\'t in this Room'))
+        res.locals.privilege = privilege
+        next()
+    } catch (e) {
+        return next(e)
     }
-    res.locals.privilege = privilege
-    next()
+    
 }
 
 // TODO: Finish remove/promote logic

@@ -5,4 +5,5 @@ body{
     --color_secondary: #72b01d;
     --color_secondary_alternative: #4aad19;
     background-color: var(--color_default);
+    color: var(--color_primary)
 }
