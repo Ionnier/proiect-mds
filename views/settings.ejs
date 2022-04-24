@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Settings</title>
+    <%- include("./fragments/head.ejs") %>
+        <style>
+        #allow_notifications{
+            display: flex;
+        }
+        #allow_notifications p{
+            margin-right: 1vw;
+        }
+        </style>
+</head>
+
+<body>
+    <%- include("./fragments/header.ejs") %>
+        <h2>Settings</h2>
+
+        <div id="notification_settings">
+            <h3>Notifications</h3>
+            <div id="notification_settings_list">
+                <div id="allow_notifications">
+                    <p> Allow Notifications?</p>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="notificationAllowSwitch" onchange="notificationOnValueChanged()">
+                      </div> 
+                </div>
+                <div id="notification_advanced_settings">
+                    <ul>
+                        <li>ASD</li>
+                        <li>ASD</li>
+                        <li>ASD</li>
+                        <li>ASD</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+
+    <script src="/resources/js/notificationUtils.js"></script>
+    <script src="/resources/js/settings.js"></script>
+</body>
+
+</html>
