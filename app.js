@@ -6,6 +6,11 @@ const creditsRouter = require('./routers/creditsRouter');
 const servicesRouter = require('./routers/servicesRouter');
 const roomsRouter = require('./routers/roomsRouter');
 const randomGuessRouter = require('./routers/randomGuessRouter');
+const {notificationsRouter, setUpNotificationServer} = require('./routers/notificationsRouter')
+const path = require('path')
+const webpush = require('web-push')
+
+setUpNotificationServer()
 
 const app = express();
 
@@ -32,12 +37,21 @@ if (process.env.NODE_ENV === 'dev') {
     app.use(morgan('dev'));
 }
 
+app.use(['/resources/js/reminderNotification.js', '/resources/js/reminderNotification'], (req, res) =>{
+    const headers = {
+        'Content-Type': 'application/javascript',
+        'Service-Worker-Allowed': '/'
+    }
+    res.sendFile(path.join(__dirname, 'resources', 'js', 'reminderNotification.js'), {headers})
+})
+
 app.use("/resources", express.static(__dirname + "/resources"))
 
 app.use('/api/credits', creditsRouter)
 app.use('/api/services', servicesRouter)
 app.use('/api/rooms', roomsRouter)
 app.use('/api/rgg/', randomGuessRouter)
+app.use('/api/notifications/', notificationsRouter)
 app.use('/', viewRouter);
 
 app.use('*', (err, req, res, next) => {

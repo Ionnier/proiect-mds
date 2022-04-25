@@ -4,7 +4,7 @@ const users = require("../models/users");
 const sequelize = require('../utils/db')
 const models = initModels(sequelize);
 const roomPrivilegeUtils = require('../utils/roomPrivilegeUtils')
-const Op = require('Sequelize').Op;
+const Op = require('sequelize').Op;
 
 exports.getRooms = async (idUser) => {
     if (idUser) {
@@ -43,7 +43,9 @@ exports.currentPrivilege = async (req, res, next) => {
             where: {
                 idUser: req.session.user.idUser,
                 idRoom: req.params.idRoom || req.body.idRoom
-            }
+            }, include: [{
+                model: models.rooms, as: 'idRoomRoom', required: false
+            }]
         })
         if (!privilege){
             return next(new Error('You aren\'t in this Room'))

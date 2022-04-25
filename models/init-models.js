@@ -1,5 +1,6 @@
 const DataTypes = require("sequelize").DataTypes;
 const _boughtservices = require("./boughtservices");
+const _notificationendpoints = require("./notificationendpoints");
 const _randomguessgames = require("./randomguessgames");
 const _randomguessoptions = require("./randomguessoptions");
 const _roomparticipants = require("./roomparticipants");
@@ -9,6 +10,7 @@ const _users = require("./users");
 
 function initModels(sequelize) {
   const boughtservices = _boughtservices(sequelize, DataTypes);
+  const notificationendpoints = _notificationendpoints(sequelize, DataTypes);
   const randomguessgames = _randomguessgames(sequelize, DataTypes);
   const randomguessoptions = _randomguessoptions(sequelize, DataTypes);
   const roomparticipants = _roomparticipants(sequelize, DataTypes);
@@ -32,6 +34,8 @@ function initModels(sequelize) {
   services.hasMany(boughtservices, { as: "boughtservices", foreignKey: "idService"});
   boughtservices.belongsTo(users, { as: "idUserUser", foreignKey: "idUser"});
   users.hasMany(boughtservices, { as: "boughtservices", foreignKey: "idUser"});
+  notificationendpoints.belongsTo(users, { as: "idUserUser", foreignKey: "idUser"});
+  users.hasMany(notificationendpoints, { as: "notificationendpoints", foreignKey: "idUser"});
   randomguessoptions.belongsTo(users, { as: "idUserUser", foreignKey: "idUser"});
   users.hasMany(randomguessoptions, { as: "randomguessoptions", foreignKey: "idUser"});
   roomparticipants.belongsTo(users, { as: "idUserUser", foreignKey: "idUser"});
@@ -39,6 +43,7 @@ function initModels(sequelize) {
 
   return {
     boughtservices,
+    notificationendpoints,
     randomguessgames,
     randomguessoptions,
     roomparticipants,

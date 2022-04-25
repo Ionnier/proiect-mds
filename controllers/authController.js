@@ -78,8 +78,20 @@ exports.destroySession = (req) => {
     }
 }
 
-exports.protect = (req, res, next) => {
+exports.protect = async (req, res, next) => {
     if (req.session && req.session.user) {
+        const user = await models.users.findOne({
+            where: {
+                idUser: req.session.user.idUser
+            }
+        })
+        if (!user) {
+            return next(new Error('User doesn\'t exis.'));
+        }
+        const userData = user.dataValues
+        userData.userPassword = undefined
+        req.session.user = userData
+        res.locals.user = userData
         return next();
     }
     return next(new Error('Not Logged In'));

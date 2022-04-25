@@ -1,5 +1,6 @@
 const initModels = require("../models/init-models");
 const randomguessgames = require("../models/randomguessgames");
+const notificationController = require('./notificationsController')
 const sequelize = require('../utils/db')
 const models = initModels(sequelize);
 const { Op } = require("sequelize");
@@ -10,9 +11,19 @@ exports.createGame = async (req, res, next) => {
         const game = await models.randomguessgames.create({
             idRoom: res.locals.privilege.idRoom
         })
+        const users = await models.users.findAll({
+            include: [{
+                model: models.rooms, as: 'idRoomRooms', required: true, where: {
+                    idRoom: res.locals.privilege.idRoom
+                }
+            }]
+        })
+        console.log(users)
+        notificationController.notificationGameCreated(users.filter(e => e.idUser != req.session.user.idUser).map(e => e.idUser), res.locals.privilege.idRoomRoom)
         return res.json({ success: true, message: "Game created succesfully!" })
     }
     catch (error) {
+        console.log(error)
         return res.json({ success: false, message: "There was an error!", error })
     }
 }
@@ -79,6 +90,8 @@ exports.solveGame = async(req, res, next) => {
                 transaction
             })
             await transaction.commit()
+            console.log(options)
+            await notificationController.notificationGameFinished(options.filter(e => e.idUser != req.session.user.idUser).map(e => e.idUser), res.locals.privilege.idRoomRoom)
             return res.status(200).json({success: true, message: 'Game finished', data: {
                 winner: elem
             }})
