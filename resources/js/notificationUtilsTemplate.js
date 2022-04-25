@@ -1,5 +1,5 @@
 const notificationPreferenceCookieName = "allowNotification"
-const publicVapidKey = "BCBtF_EPS7NHdxeWQxPgCVXEUYLHaLINdp6_LhlSYvsxQeZyiLoWRaPqYwuA1oQ9sRkLRH86XYJhbsmlC7aRGNE"
+const publicVapidKey = '$$$$PUBLIC$$$$VAPID$$$$KEY'
 const reminderNotificationWorker = "/resources/js/reminderNotification.js"
 
 function checkNotificationSupport() {

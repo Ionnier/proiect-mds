@@ -10,11 +10,6 @@ const app = require('./app');
 
 const port = process.env.PORT || 3000;
 
-if (process.env.DATABASE_URL.includes('localhost')) {
-    process.env.HOSTNAME = `localhost:${port}`
-    process.env.PROTOCOL = 'http'
-}
-
 const server = app.listen(port, () => {
     console.log(`App running on port ${port}...`);
 });

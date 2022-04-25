@@ -2,8 +2,33 @@ const initModels = require("../models/init-models");
 const sequelize = require('../utils/db')
 const models = initModels(sequelize);
 const webpush = require('web-push')
+const fs = require('fs')
+const path = require('path')
+
+// Placeholder, as we only use this here, a different approach will be implemented if we need this in other places
+if (process.env.DATABASE_URL.includes('localhost')) {
+    process.env['HOSTNAME'] = `localhost:${process.env.PORT || 3000}`
+    process.env['PROTOCOL'] = 'http'
+} else {
+    process.env['PROTOCOL'] = 'https'
+}
 
 exports.setUpNotificationServer = () => {
+    if (process.env.VAPID_PRIVATE && process.env.VAPID_PUBLIC) {
+        const jsDirectory = path.join(__dirname, '..', 'resources', 'js')
+        if(!fs.existsSync(path.join(jsDirectory, 'notificationUtils.js'))){
+            const data = fs.readFileSync(path.join(jsDirectory, 'notificationUtilsTemplate.js'), {encoding: 'utf-8'})
+            fs.writeFileSync(path.join(jsDirectory, 'notificationUtils.js'), data.replace('$$$$PUBLIC$$$$VAPID$$$$KEY', process.env.VAPID_PUBLIC))
+        }
+        if (process.env.NODE_ENV == 'dev'){
+            const utilsDirectory = path.join(__dirname, '..', 'utils')
+            if(!fs.existsSync(path.join(utilsDirectory, 'webpush.js'))){
+                const data = fs.readFileSync(path.join(utilsDirectory, 'webpushTemplate.js'), {encoding: 'utf-8'})
+                fs.writeFileSync(path.join(utilsDirectory, 'webpush.js'), data.replace('$$$$PUBLIC$$$$VAPID$$$$KEY', process.env.VAPID_PUBLIC).replace('$$$$PRIVATE$$$$VAPID$$$$KEY', process.env.VAPID_PRIVATE).replace('$$$$HOST$$$$NAME$$$$', `${process.env.PROTOCOL}://${process.env.HOSTNAME}`))
+            }
+
+        }
+    }
     webpush.setVapidDetails(`${process.env.PROTOCOL}://${process.env.HOSTNAME}`, process.env.VAPID_PUBLIC, process.env.VAPID_PRIVATE);
 };
 
