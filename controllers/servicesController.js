@@ -111,11 +111,11 @@ function calculateCredits(service) {
 }
 
 exports.updateServices = async (req, res, next) => {
-    const data = await sequelize.query(`SELECT * from UpdateServices;`, {
-        where: {
-            idUser: req.session.user.idUser
-        }
+    console.log('asd')
+    const data = await sequelize.query(`SELECT * from UpdateServices where id_user = $1`, {
+        bind: [req.session.user.idUser]
     })
+    console.log(data)
     const transaction = await sequelize.transaction();
     try {
         for (let elem of data[0]) {

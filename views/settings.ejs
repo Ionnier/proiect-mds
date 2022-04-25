@@ -5,13 +5,30 @@
     <title>Settings</title>
     <%- include("./fragments/head.ejs") %>
         <style>
-        #allow_notifications{
+        #allow_notifications, #notification_advanced_settings li{
             display: flex;
         }
-        #allow_notifications p{
-            margin-right: 1vw;
+        #allow_notifications p, #notification_advanced_settings .form-check{
+            margin-left: 1vw;
         }
         </style>
+
+        <script>
+            async function toggle(args){
+                try{
+                    const request = await fetch (`/api/notifications/settings/${args.id}`)
+                    const data = await request.json()
+                    if (data.success){
+                        location.reload()
+                    } else {
+                        alert(data.message)
+                    }
+                } catch (e){
+                    alert(e)
+                }
+            }
+            
+        </script>
 </head>
 
 <body>
@@ -25,14 +42,13 @@
                     <p> Allow Notifications?</p>
                     <div class="form-check form-switch">
                         <input class="form-check-input" type="checkbox" id="notificationAllowSwitch" onchange="notificationOnValueChanged()">
-                      </div> 
+                    </div> 
                 </div>
                 <div id="notification_advanced_settings">
                     <ul>
-                        <li>ASD</li>
-                        <li>ASD</li>
-                        <li>ASD</li>
-                        <li>ASD</li>
+                        <li>When a game you participated in finished <div class="form-check form-switch"> <input class="form-check-input" type="checkbox" id="finishedGame" onchange="toggle(this)" <%- `${user.notificationGameFinished==true? "checked": ""}`%>> </div> </li>
+                        <li>When a new game is created <div class="form-check form-switch"> <input class="form-check-input" type="checkbox" id="createdGame" onchange="toggle(this)" <%- `${user.notificationGameCreated==true? "checked": ""}`%> > </div> </li>
+                        <li>From time to time to show accumultated credits <div class="form-check form-switch"> <input class="form-check-input" type="checkbox" id="pointsReminder" onchange="toggle(this)" <%- `${user.notificationPointsRefresh==true? "checked": ""}`%> > </div> </li>
                     </ul>
                 </div>
             </div>
@@ -41,6 +57,7 @@
 
     <script src="/resources/js/notificationUtils.js"></script>
     <script src="/resources/js/settings.js"></script>
+    <% console.log(user)%>
 </body>
 
 </html>

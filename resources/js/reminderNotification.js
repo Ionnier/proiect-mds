@@ -1,10 +1,10 @@
 self.addEventListener("push", e => {
     const data = e.data.json();
     self.registration.showNotification(
-        data.title,
+        data.title || 'New notification',
         {
-            body: "Push notification from section.io",
-            image: "/resources/images/logo.png",
+            body: data.body || 'Check what\'s new on our website',
+            image: data.image || "/resources/images/logo.png",
             icon: "/resources/images/logo.png"
         }
     );

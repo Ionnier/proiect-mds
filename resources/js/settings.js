@@ -24,11 +24,11 @@ function setUpNotificationGeneralSettings() {
     }
 }
 
-function notificationOnValueChanged(){
+async function notificationOnValueChanged(){
     if (document.getElementById('notificationAllowSwitch').checked == true){
-        setNotificationCookie()
+        await setNotificationCookie()
     } else {
-        resetNotificationCookie()
+        await resetNotificationCookie()
     }
     setUpNotificationSettings()
 }

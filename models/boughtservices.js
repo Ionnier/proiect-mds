@@ -35,7 +35,7 @@ class boughtservices extends Sequelize.Model {
     serviceLastCheck: {
       type: DataTypes.DATE,
       allowNull: true,
-      defaultValue: Sequelize.Sequelize.fn('now'),
+      defaultValue: Sequelize.Sequelize.literal('CURRENT_TIMESTAMP'),
       field: 'service_last_check'
     },
     serviceImage: {

@@ -51,7 +51,7 @@ app.use('/api/credits', creditsRouter)
 app.use('/api/services', servicesRouter)
 app.use('/api/rooms', roomsRouter)
 app.use('/api/rgg/', randomGuessRouter)
-app.use('/notifications/', notificationsRouter);
+app.use('/api/notifications/', notificationsRouter)
 app.use('/', viewRouter);
 
 app.use('*', (err, req, res, next) => {

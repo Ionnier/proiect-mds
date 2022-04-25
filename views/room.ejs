@@ -287,7 +287,6 @@
                                         <p class="winning_choice">Winning Choice: <%- `${winningChoice.optionName}(${winningChoice.idUserUser.userName}/${winningChoice.points})` %></p>
                                         <% }%>
                                     <p class="total_players"> Players that joined: <ul>
-                                        <% console.log(game) %>
                                         <% for(let user of new Set(game.randomguessoptions.map(e => JSON.stringify(e.idUserUser.dataValues)))) { user = JSON.parse(user)%>
                                             <li> <%- `${user.userName}` %></li>
                                         <%} %>

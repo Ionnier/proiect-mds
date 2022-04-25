@@ -12,6 +12,8 @@ router.get(['/', '/index'], viewController.getHomePage)
 router.get('/login', viewController.getLoginPage)
 router.post('/login', viewController.postLoginPage)
 
+router.get('/settings', authController.protect)
+
 router.get('/signup', viewController.getSignUpPage)
 router.post('/signup', viewController.postSignUpPage)
 
