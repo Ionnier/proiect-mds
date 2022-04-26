@@ -26,12 +26,12 @@ class services extends Sequelize.Model {
       field: 'service_description'
     },
     serviceBasePrice: {
-      type: DataTypes.BIGINT,
+      type: DataTypes.REAL,
       allowNull: false,
       field: 'service_base_price'
     },
     serviceBaseValue: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.REAL,
       allowNull: false,
       field: 'service_base_value'
     },
@@ -52,9 +52,9 @@ class services extends Sequelize.Model {
       field: 'service_max_level'
     },
     serviceRefreshValue: {
-      type: DataTypes.BIGINT,
+      type: DataTypes.INTEGER,
       allowNull: false,
-      defaultValue: 1000,
+      defaultValue: 60,
       field: 'service_refresh_value'
     }
   }, {
