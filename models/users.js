@@ -41,26 +41,26 @@ class users extends Sequelize.Model {
       field: 'user_password'
     },
     userCredits: {
-      type: DataTypes.BIGINT,
+      type: DataTypes.REAL,
       allowNull: false,
       defaultValue: 0,
       field: 'user_credits'
     },
     notificationGameFinished: {
       type: DataTypes.BOOLEAN,
-      allowNull: true,
+      allowNull: false,
       defaultValue: false,
       field: 'notification_game_finished'
     },
     notificationGameCreated: {
       type: DataTypes.BOOLEAN,
-      allowNull: true,
+      allowNull: false,
       defaultValue: false,
       field: 'notification_game_created'
     },
     notificationPointsRefresh: {
       type: DataTypes.BOOLEAN,
-      allowNull: true,
+      allowNull: false,
       defaultValue: false,
       field: 'notification_points_refresh'
     }

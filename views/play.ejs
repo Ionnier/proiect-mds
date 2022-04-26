@@ -119,6 +119,7 @@
                 if (automatic) {
                     map.set(`service${idService}`, false)
                 }
+                updateServiceSecond()
             }
 
             async function onChangeInput(args) {
@@ -140,6 +141,7 @@
                             break
                         }
                     }
+                updateServiceSecond()
                 setInterval(async () => {
                     for (let [key, value] of map.entries()) {
                         if (value == true) {
@@ -152,8 +154,24 @@
                             map.set(key, true)
                         }
                     }
+                    updateServiceSecond()
                 }, 60_000)
             }, false);
+            function updateServiceSecond(){
+                let accu = Array.from(document.getElementsByClassName('service')).reduce((acc, value) => {
+                    let level = (value.getElementsByClassName('serviceLevel')[0].innerHTML.split(" ").filter(e => e!="" || e.length>0).map(e => e.replace("\n", "")))[2]
+                    if (parseInt(level) > 0){
+                        let valuesPerCycle = (value.getElementsByClassName('serviceValue')[0].innerHTML.split(" ").filter(e => e!="").map(e => e.replace("\n", "")))
+                        let valuePerCycle = parseFloat(valuesPerCycle[valuesPerCycle.length-1])
+                        let refresh = parseInt((value.getElementsByClassName('times')[0].innerHTML.split(" ").filter(e => e!="").map(e => e.replace("\n", "")))[2])
+                        acc = acc + (refresh * valuePerCycle / 60)
+                    } else {
+                        acc += 0
+                    }
+                    return acc                    
+                }, 0)
+                document.getElementById('service_value').innerHTML = `You currently earn ${accu} every second.`
+            }
         </script>
 </head>
 
@@ -165,6 +183,7 @@
 
             <div id="info">
                 <p id="credits_score"> You currently have <%- locals.user.userCredits%> credits.</p>
+                <p id="service_value"> You currently earn 0 every second.</p>
             </div>
 
             <div id="click_button">
@@ -207,6 +226,8 @@
                                                                                 id="level<%- service.idService %>">
                                                                                 Level: <%- level %>
                                                                                     (<%-service.serviceMaxLevel %>)
+                                                                            </p>
+                                                                            <p class="times">Refreshes every <%- service.serviceRefreshValue %> seconds.
                                                                             </p>
                                                                             <input type="button" value="Upgrade"
                                                                                 onclick="onChangeInput(<%- service.idService%>)">
