@@ -3,11 +3,24 @@ services:
     db:
         image: postgres:14.0
         restart: always
-        ports:
-            - "5432:5432"
         environment:
             POSTGRES_PASSWORD: postgresspa55
         volumes:
-            - "receiptdbdata:/var/lib/postgresql/data"
-volumes:
-    receiptdbdata: null
+            - ./utils/InitSQL.sql:/docker-entrypoint-initdb.d/InitSQL.sql
+        healthcheck:
+            test: ["CMD-SHELL", "pg_isready -U postgres"]
+            interval: 5s
+            timeout: 5s
+            retries: 5
+    web_app:
+        build: .
+        restart: always
+        env_file:
+            - .env
+        environment:
+            - DATABASE_URL=postgres://postgres:postgresspa55@db:5432/postgres
+        ports:
+            - 5000:3000
+        depends_on:
+            db:
+                condition: service_healthy 

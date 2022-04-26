@@ -1,0 +1,26 @@
+FROM node:16.13.2-alpine
+
+ARG NODE_ENV=production
+ENV NODE_ENV=$NODE_ENV
+
+ARG PORT=3000
+ENV PORT=$PORT
+
+ENV DATABASE_URL=$DATABASE_URL
+ENV SESSION_SECRET=SESSION_SECRET
+ENV SALT_ROUNDS=SALT_ROUNDS
+ENV VAPID_PUBLIC=VAPID_PUBLIC
+ENV VAPID_PRIVATE=VAPID_PRIVATE
+ENV MENTENANTA=$MENTENANTA
+
+RUN npm i npm@latest -g
+
+RUN mkdir /app/
+WORKDIR /app
+
+COPY package.json package-lock.json* ./
+RUN npm install
+
+COPY --chown=node:node . .
+
+CMD [ "node", "index.js" ]
