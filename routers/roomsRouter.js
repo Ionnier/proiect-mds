@@ -11,4 +11,5 @@ router.patch('/:idRoom/', authController.protect, express.json(), roomsControlle
 router.delete('/:idRoom/', authController.protect, express.json(), roomsController.currentPrivilege, roomsController.deleteRoom)
 router.post('/:idRoom/', authController.protect, express.json(), roomsController.currentPrivilege, roomsController.addUser)
 router.post('/', authController.protect, express.json(), roomsController.createRoom)
+router.post('/image/upload/:idRoom/', authController.protect, roomsController.currentPrivilege, roomsController.handleImage)
 module.exports = router;

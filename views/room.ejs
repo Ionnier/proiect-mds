@@ -190,7 +190,6 @@
 <body>
     <%- include("./fragments/header.ejs") %>
         <main>
-            <% //TODO: h3 hidden, display textbox, rename button changes name and refresh, add logic, finish commit%>
             <% if(getValueOfPrivilege(locals.privilege.roomRole) >= 1){%>
             <h3 onclick="showRoomOptions()" tabindex='-1'>
                 <%- room.roomName %>
@@ -202,6 +201,10 @@
                     <button onclick="if(confirm(`Delete room <%- room.roomName %>`)) deleteRoom()" id="delete_button">Delete Room</button>
                 <%} %>
                 <button id="cancel_button" onclick="hideRoomOptions()">Cancel</button>
+                <form action="/api/rooms/image/upload/<%- room.idRoom%>" method="post" enctype="multipart/form-data">
+                    <input type="file" id="roomImage" name="roomImage">
+                    <input type="submit">
+                </form>
             </div>
             <%} else { %>
                 <h3>

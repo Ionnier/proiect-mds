@@ -5,6 +5,10 @@ const sequelize = require('../utils/db')
 const models = initModels(sequelize);
 const roomPrivilegeUtils = require('../utils/roomPrivilegeUtils')
 const Op = require('sequelize').Op;
+const formidable = require('formidable')
+const path = require('path');
+const fs = require("fs");
+const mv = require('mv');
 
 exports.getRooms = async (idUser) => {
     if (idUser) {
@@ -16,6 +20,65 @@ exports.getRooms = async (idUser) => {
             }]
         })
     }
+}
+
+function makeDirPromised(directory){
+    return new Promise((resolve, reject) => {
+        fs.mkdir(directory, {
+            recursive: true
+        }, (err) => {
+            if(err){
+                reject(err)
+            }
+            resolve(true)
+        })
+    })
+} 
+
+function mv_file(old_path, new_path) {
+    return new Promise((resolve, reject) => {
+        mv(old_path, new_path, (err) => {
+            if (err) {
+                reject(err)
+            }
+            resolve(true)
+        })
+    })
+}
+
+exports.handleImage = async(req, res, next) => {
+    console.log('Hello!')
+    var formular = new formidable.IncomingForm();
+    formular.parse(req, async (err, _, campuriFile) => {
+        if(!campuriFile){
+            await models.rooms.update({
+                roomImage: null
+            }, {
+                where:{
+                    idRoom: res.locals.idRoom
+                }
+            })
+            return res.status(204).json({success: true, message: 'Deleted'})
+        }
+        const imagesDirectory = path.join(__dirname, "..", "resources", "images", "roomimages")
+        if (!fs.existsSync(imagesDirectory)){
+            await makeDirPromised(imagesDirectory)
+        }
+        let v = campuriFile.roomImage.originalFilename.split(".")
+        file_path = path.join(imagesDirectory, `${res.locals.privilege.idRoom}.${v[v.length - 1]}`)
+        await mv_file(campuriFile.roomImage.filepath, file_path)
+        let roomImage = file_path.replace(path.join(__dirname, ".."), "").replace(/\\/g, "/")
+        await models.rooms.update({
+            roomImage
+        }, {
+            where:{
+                idRoom: res.locals.privilege.idRoom
+            }
+        } )
+        res.writeHead(302, {location: `/room/${res.locals.privilege.idRoom}`,});
+        res.end();
+        return
+    })
 }
 
 exports.getRoom = async (idRoom, idUser) => {
@@ -58,8 +121,6 @@ exports.currentPrivilege = async (req, res, next) => {
     
 }
 
-// TODO: Finish remove/promote logic
-// TODO: Add memeber logic
 exports.removeUser = async (req, res) => {
     const otherUser = await models.roomparticipants.findOne({
         where: {
