@@ -8,6 +8,7 @@ const router = express.Router();
 
 router.post('/:idRoom/', authController.protect, roomsController.currentPrivilege, randomGuessController.createGame)
 router.post('/option/:idRoom/', authController.protect, express.json(), roomsController.currentPrivilege, servicesController.updateServices, randomGuessController.addOption)
+router.delete('/option/:idRoom/', authController.protect, express.json(), roomsController.currentPrivilege, randomGuessController.deleteOption)
 router.get('/finish/:idRoom/', authController.protect, roomsController.currentPrivilege, randomGuessController.solveGame)
 
 module.exports = router;
