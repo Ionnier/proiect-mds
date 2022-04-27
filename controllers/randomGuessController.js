@@ -104,9 +104,36 @@ exports.solveGame = async(req, res, next) => {
         if (options.length <= 0){
             return next(new Error('There were no participants in the game'))
         }
-        const sumAllPoints = options.reduce((total, currentValue) => {return total + currentValue.points}, 0)
+        for (let user of options.map(e => e.idUser)){
+            const total = options.filter(e => e.idUser = user).reduce((acc, val) => {
+                acc += val.points
+                return acc
+            }, 0)
+            console.log(total)
+            if (total <= 0){
+                return next(new Error('Unfair game'))
+            }
+        }
+        console.log(options)
+        for (let option of options){
+            if(option.points<0){
+                const remainingOptions = options.filter(e => e.idUser != option.idUser && e.points > 0).length
+                option.points = (-1) * option.points
+                const perElement = Math.floor(options.points / remainingOptions)
+                for (let option2 of options.filter(e => e.idUser != option.idUser && e.points > 0).sort((a, b) => {return a.points - b.points})){
+                    if (option.points<=0){
+                        break
+                    }
+                    option2.points += perElement
+                } 
+                option.points = 0
+            }
+        }
+        console.log(options)
+        const newOptions = options.filter(e => e.points > 0)
+        const sumAllPoints = newOptions.reduce((total, currentValue) => {return total + currentValue.points}, 0)
         let chosenOne = Math.floor(Math.random() * (sumAllPoints+1))
-        for (let elem of options.sort((a, b)=>{return Math.random() - 0.5})) {
+        for (let elem of newOptions.sort((a, b)=>{return Math.random() - 0.5})) {
             chosenOne -= elem.points
             if (chosenOne > 0)
                 continue
@@ -124,7 +151,6 @@ exports.solveGame = async(req, res, next) => {
                 transaction
             })
             await transaction.commit()
-            console.log(options)
             await notificationController.notificationGameFinished(options.filter(e => e.idUser != req.session.user.idUser).map(e => e.idUser), res.locals.privilege.idRoomRoom)
             return res.status(200).json({success: true, message: 'Game finished', data: {
                 winner: elem
