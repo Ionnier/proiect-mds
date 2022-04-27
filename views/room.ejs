@@ -158,6 +158,24 @@
                 else
                     location.reload()
             }
+            async function deleteOption(args){
+                const optionName = args.parentNode.getElementsByTagName('span')[0].innerHTML
+                const body = {optionName}
+                const request = await fetch(`/api/rgg/option/<%- room.idRoom%>`, {
+                    method: 'DELETE',
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Content-Length": JSON.stringify(body).length
+                    },
+                    body: JSON.stringify(body)
+                })
+                const data = await request.json()
+                if (data.success == false){
+                    alert(data.message)
+                }
+                else
+                    location.reload()
+            }
             async function startGame(){
                 const request = await fetch(`/api/rgg/finish/<%- room.idRoom%>`)
                 const data = await request.json()
@@ -267,7 +285,7 @@
                                     <p>Current options: </p>
                                     <ul>
                                         <% for(let elem of currentOptions){%>
-                                            <li> <%- elem.optionName%> (<%- elem.points %>)</li>
+                                            <li> <span><%- elem.optionName%></span> (<%- elem.points %>) <img src="/resources/images/delete.webp" style="width:16px;" alt="Delete Option" onclick="deleteOption(this)"> </li>
                                             <%}%>
                                     </ul>
                                 <%} %> 

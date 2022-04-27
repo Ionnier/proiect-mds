@@ -18,7 +18,6 @@ exports.createGame = async (req, res, next) => {
                 }
             }]
         })
-        console.log(users)
         notificationController.notificationGameCreated(users.filter(e => e.idUser != req.session.user.idUser).map(e => e.idUser), res.locals.privilege.idRoomRoom)
         return res.json({ success: true, message: "Game created succesfully!" })
     }
@@ -44,6 +43,41 @@ exports.addOption = async (req, res, next) => {
             transaction})
         await transaction.commit()
         return res.json({ success: true, message: "Option added succesfully!", data: {game}})
+    }
+    catch (error) {
+        console.log(error)
+        return res.json({ success: false, message: "There was an error!", error })
+    }
+}
+
+exports.deleteOption = async (req, res, next) => {
+    try {
+        const transaction = await sequelize.transaction()
+        const wtf = await models.randomguessgames.findOne({
+            where: {
+                randomGuessGameFinishDate: null,
+                idRoom: res.locals.privilege.idRoom
+            }, transaction
+        })
+        const game = await models.randomguessoptions.findOne({
+            where:{
+                idRandomGuessGame: wtf.idRandomGuessGame,
+                optionName: req.body.optionName,
+                idUser: req.session.user.idUser
+            },
+            transaction
+        })
+        if (game == undefined){
+            return next(new Error('Not Found'))
+        }
+        const user = await models.users.increment({userCredits: game.points},{ 
+            where: {idUser: req.session.user.idUser},
+            transaction})
+        await game.destroy({
+            transaction
+        })
+        await transaction.commit()
+        return res.json({ success: true, message: "Option deleted succesfully!"})
     }
     catch (error) {
         console.log(error)
