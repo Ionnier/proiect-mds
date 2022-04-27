@@ -9,6 +9,8 @@ const formidable = require('formidable')
 const path = require('path');
 const fs = require("fs");
 const mv = require('mv');
+const { readdir } = require("fs/promises");
+const sharp = require("sharp");
 
 exports.getRooms = async (idUser) => {
     if (idUser) {
@@ -254,3 +256,22 @@ exports.addRoomUtils = async (req, res, next) => {
         res.locals[x] = roomPrivilegeUtils[x]
     next()
 }
+
+async function setUpRandomImage(){
+    try {
+        const pathToRandomImagesDirectory = path.join(__dirname, "..", "resources", "images", "randomimages")
+        if (!fs.existsSync(pathToRandomImagesDirectory))
+            return
+        const files = await readdir(pathToRandomImagesDirectory)
+        for (let file of files){
+            if(file.includes('webp'))
+                continue
+            sharp(path.join(pathToRandomImagesDirectory, file)).toFile(path.join(pathToRandomImagesDirectory, `${ file.split(".")[0] }.webp`))
+            fs.rmSync(path.join(pathToRandomImagesDirectory, file))
+        }
+    } catch (e) {
+        console.log(e)
+        console.log('Couldn\'t set up random images.')
+    }
+}
+setUpRandomImage()

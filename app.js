@@ -9,6 +9,7 @@ const randomGuessRouter = require('./routers/randomGuessRouter');
 const {notificationsRouter, setUpNotificationServer} = require('./routers/notificationsRouter')
 const path = require('path')
 const webpush = require('web-push')
+const fs = require('fs')
 
 setUpNotificationServer()
 
@@ -43,6 +44,17 @@ app.use(['/resources/js/reminderNotification.js', '/resources/js/reminderNotific
         'Service-Worker-Allowed': '/'
     }
     res.sendFile(path.join(__dirname, 'resources', 'js', 'reminderNotification.js'), {headers})
+})
+
+app.get("/resources/images/randomimages/*", (req, res) => {
+    const dirPath = path.join(__dirname, 'resources', 'images', 'randomimages')
+    fs.readdir(dirPath, (err, files) => {
+        if (err){
+            return res.sendFile(path.join(dirPath,"..", "error.png"))
+        }
+        const chosen_one = Math.floor(Math.random() * files.length)
+        res.sendFile(path.join(dirPath, files[chosen_one]))
+    })
 })
 
 app.use("/resources", express.static(__dirname + "/resources"))
