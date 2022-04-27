@@ -109,7 +109,7 @@ create table RandomGuessOptions(
 	id_user int not null references Users(id_user) on delete cascade,
 	option_name text not null,
 	winner bool default false,
-	points int default 0 not null check(points>=0),
+	points int default 0 not null check(points>0),
 	constraint pk_rgo primary key (id_random_guess_game, id_user, option_name)
 );
 
